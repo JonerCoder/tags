@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EBMS Launchpage</title>
+  <link rel="icon" type="x-icon" href="ebms.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c1c1e;
+      --muted: #8e8e93;
+      --line: #e5e5ea;
+      --surface: #fff;
+      --page: #f2f2f7;
+      --accent: #ff3b30;
+      --holiday: #fff0ef;
+      --holiday-ink: #d92d25;
+      --shadow: 0 2px 8px rgb(0 0 0 / 4%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body.dark {
+      color-scheme: dark;
+      --ink: #f2f2f7;
+      --muted: #98989f;
+      --line: #38383a;
+      --surface: #1c1c1e;
+      --page: #000;
+      --accent: #ff453a;
+      --holiday: #4a2523;
+      --holiday-ink: #ff8a80;
+      --shadow: 0 2px 8px rgb(0 0 0 / 20%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      transition: background .2s, color .2s;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .app {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+
+    .topbar, .calendar-toolbar, .month-controls, .toolbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .topbar { margin-bottom: 20px; }
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 0; font-size: 2rem; letter-spacing: -.045em; }
+    h2 { letter-spacing: -.025em; }
+
+    .eyebrow {
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .country-picker, .field {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: .76rem;
+    }
+
+    select, input {
+      min-height: 40px;
+      width: 100%;
+      padding: 9px 11px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      background: var(--surface);
+      color: var(--ink);
+    }
+
+    select:focus, input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgb(255 59 48 / 12%);
+    }
+
+    input[type="color"] {
+      min-height: 40px;
+      padding: 4px;
+      cursor: pointer;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .calendar-panel, .card {
+      border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+      border-radius: 14px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .calendar-panel { padding: 20px; }
+    .calendar-toolbar { margin-bottom: 18px; }
+    .month-controls { justify-content: flex-start; gap: 8px; }
+
+    .month-controls h2 {
+      min-width: 190px;
+      margin: 0;
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: 650;
+    }
+
+    .icon-button, .plain-button, .view-button {
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--accent);
+    }
+
+    .icon-button {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border-radius: 50%;
+      font-size: 1.7rem;
+      line-height: 1;
+    }
+
+    .icon-button:hover, .plain-button:hover, .view-button:hover {
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+
+    .plain-button, .view-button {
+      min-height: 36px;
+      padding: 7px 11px;
+      font-size: .82rem;
+      font-weight: 600;
+    }
+
+    .view-switch {
+      display: flex;
+      padding: 3px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--page);
+    }
+
+    .view-button { color: var(--muted); }
+    .view-button.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+    }
+
+    .weekdays, .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .weekdays {
+      margin-bottom: 5px;
+      color: var(--muted);
+      text-align: center;
+      font-size: .72rem;
+      font-weight: 650;
+    }
+
+    .calendar-grid {
+      grid-auto-rows: minmax(104px, 1fr);
+      border-top: 1px solid var(--line);
+      border-left: 1px solid var(--line);
+      touch-action: pan-y;
+    }
+
+    .calendar-grid.week-view { grid-auto-rows: minmax(220px, 1fr); }
+
+    .day-cell {
+      min-width: 0;
+      padding: 7px 6px;
+      overflow: hidden;
+      border: 0;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--ink);
+      text-align: center;
+      touch-action: pan-y;
+      user-select: none;
+    }
+
+    .day-cell:hover { background: color-mix(in srgb, var(--ink) 3%, var(--surface)); }
+    .day-cell.outside-month { color: color-mix(in srgb, var(--muted) 55%, var(--surface)); }
+    .day-cell.drag-range { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+
+    .day-number {
+      display: grid;
+      width: 29px;
+      height: 29px;
+      place-items: center;
+      margin: 0 auto 5px;
+      border-radius: 50%;
+      font-size: .8rem;
+    }
+
+    .day-cell.is-today .day-number { color: var(--accent); font-weight: 700; }
+    .day-cell.selected .day-number { background: var(--accent); color: #fff; font-weight: 700; }
+    .day-cell.is-today.selected .day-number { color: #fff; }
+
+    .day-item {
+      display: block;
+      overflow: hidden;
+      margin-top: 3px;
+      padding: 3px 5px;
+      border-radius: 5px;
+      font-size: .64rem;
+      line-height: 1.25;
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .day-item.holiday { background: var(--holiday); color: var(--holiday-ink); }
+    .more-items {
+      display: block;
+      padding: 4px 5px;
+      color: var(--muted);
+      font-size: .64rem;
+      text-align: left;
+    }
+
+    .sidebar { display: grid; gap: 14px; }
+    .card { padding: 17px; }
+    .card h2 { margin-bottom: 14px; font-size: 1.05rem; font-weight: 650; }
+
+    .event-form, .category-form { display: grid; gap: 9px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .add-button, .secondary-button, .danger-button {
+      min-height: 40px;
+      padding: 9px 12px;
+      border: 0;
+      border-radius: 10px;
+      font-weight: 650;
+    }
+
+    .add-button { background: var(--accent); color: #fff; }
+    .add-button:hover { filter: brightness(.94); }
+    .secondary-button { background: color-mix(in srgb, var(--ink) 8%, var(--surface)); color: var(--ink); }
+    .danger-button { background: #ffe5e3; color: #b42318; }
+
+    .day-card h2 { margin-bottom: 12px; font-size: .98rem; }
+    .day-events { display: grid; gap: 8px; }
+
+    .event-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 10px;
+      border-left: 4px solid var(--event-color, #34c759);
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--event-color, #34c759) 10%, var(--surface));
+      font-size: .8rem;
+    }
+
+    .event-row strong { display: block; margin-bottom: 3px; font-weight: 650; }
+    .event-row small { color: var(--muted); font-size: .71rem; }
+    .event-kind {
+      display: inline-block;
+      margin: 5px 4px 0 0;
+      padding: 2px 6px;
+      border-radius: 5px;
+      background: color-mix(in srgb, var(--event-color, #34c759) 18%, var(--surface));
+      color: var(--event-color, #34c759);
+      font-size: .66rem;
+      font-weight: 650;
+    }
+
+    .remove-event, .delete-category {
+      flex: 0 0 auto;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    .remove-event:hover, .delete-category:hover { color: var(--accent); }
+
+    .empty-message, .storage-note, .hint {
+      color: var(--muted);
+      font-size: .77rem;
+      line-height: 1.45;
+    }
+
+    .empty-message { margin: 0; }
+    .storage-note { margin: 0; padding: 0 4px; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+      .sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .storage-note { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 620px) {
+      .app { padding: 20px 10px; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .calendar-panel { padding: 12px 8px; }
+      .calendar-toolbar { flex-wrap: wrap; }
+      .month-controls { gap: 3px; }
+      .month-controls h2 { min-width: 150px; font-size: 1rem; }
+      .toolbar-actions { margin-left: auto; }
+      .calendar-grid { grid-auto-rows: minmax(75px, 1fr); }
+      .calendar-grid.week-view { grid-auto-rows: minmax(150px, 1fr); }
+      .day-cell { padding: 5px 3px; }
+      .day-number { width: 26px; height: 26px; font-size: .74rem; }
+      .day-item { padding: 3px; font-size: .56rem; }
+      .sidebar { grid-template-columns: 1fr; }
+      .storage-note { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">YOUR PERSONAL PLANNER</p>
+        <h1>Calendar</h1>
+      </div>
+      <label class="country-picker" for="country">
+        <span>Holiday country</span>
+        <select id="country">
+          <option value="US">United States</option>
+          <option value="GB">United Kingdom</option>
+          <option value="CA">Canada</option>
+          <option value="AU">Australia</option>
+          <option value="DE">Germany</option>
+          <option value="FR">France</option>
+          <option value="ES">Spain</option>
+          <option value="IN">India</option>
+          <option value="JP">Japan</option>
+          <option value="BR">Brazil</option>
+          <option value="MX">Mexico</option>
+          <option value="ZA">South Africa</option>
+          <option value="NG">Nigeria</option>
+        </select>
+      </label>
+    </header>
+
+    <section class="layout">
+      <div class="calendar-panel">
+        <div class="calendar-toolbar">
+          <div class="month-controls">
+            <button id="previous-period" class="icon-button" aria-label="Previous">‹</button>
+            <h2 id="period-label" aria-live="polite"></h2>
+            <button id="next-period" class="icon-button" aria-label="Next">›</button>
+            <button id="today-button" class="plain-button">Today</button>
+          </div>
+          <div class="toolbar-actions">
+            <div class="view-switch" aria-label="Calendar view">
+              <button class="view-button active" data-view="month">Month</button>
+              <button class="view-button" data-view="week">Week</button>
+            </div>
+            <button id="theme-button" class="plain-button" type="button">Dark mode</button>
+          </div>
+        </div>
+
+        <div class="weekdays" aria-hidden="true">
+          <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span>
+          <span>Fri</span><span>Sat</span><span>Sun</span>
+        </div>
+        <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="Calendar"></div>
+        <p class="hint">Tip: drag across dates to start a multi-day task.</p>
+      </div>
+
+      <aside class="sidebar">
+        <section class="card">
+          <p class="eyebrow">ADD TO YOUR CALENDAR</p>
+          <h2>New item</h2>
+          <form id="event-form" class="event-form">
+            <label class="field">Name
+              <input id="event-title" name="title" maxlength="80" placeholder="e.g. Team meeting" required>
+            </label>
+            <div class="form-row">
+              <label class="field">Type
+                <select id="event-type" name="type">
+                  <option value="event">Event</option>
+                  <option value="task">Task</option>
+                  <option value="birthday">Birthday</option>
+                </select>
+              </label>
+              <label class="field">Category
+                <select id="event-category" name="category"></select>
+              </label>
+            </div>
+            <div class="form-row">
+              <label class="field">Starts
+                <input id="event-start" name="startDate" type="date" required>
+              </label>
+              <label class="field">Ends
+                <input id="event-end" name="endDate" type="date" required>
+              </label>
+            </div>
+            <label class="field">Repeats
+              <select id="event-repeat" name="repeat">
+                <option value="none">Does not repeat</option>
+                <option value="daily">Every day</option>
+                <option value="weekly">Every week</option>
+                <option value="monthly">Every month</option>
+                <option value="yearly">Every year</option>
+              </select>
+            </label>
+            <button class="add-button" type="submit">Add to calendar</button>
+          </form>
+        </section>
+
+        <section class="card">
+          <p class="eyebrow">CUSTOMIZE CATEGORIES</p>
+          <h2>Category settings</h2>
+          <form id="category-form" class="category-form">
+            <label class="field">Choose category
+              <select id="category-editor-select"></select>
+            </label>
+            <label class="field">Category name
+              <input id="category-name" maxlength="30" required>
+            </label>
+            <label class="field">Category color
+              <input id="category-color" type="color" value="#5e5ce6">
+            </label>
+            <div class="form-row">
+              <button class="secondary-button" type="submit">Save category</button>
+              <button id="new-category" class="secondary-button" type="button">New category</button>
+            </div>
+            <button id="delete-category" class="danger-button" type="button">Delete category</button>
+          </form>
+        </section>
+
+        <section class="card day-card">
+          <p class="eyebrow">SELECTED DAY</p>
+          <h2 id="selected-date-label"></h2>
+          <div id="day-events" class="day-events"></div>
+        </section>
+        <p class="storage-note">Your events and categories are saved in this browser on this device.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const $ = selector => document.querySelector(selector);
+    const countrySelect = $("#country");
+    const grid = $("#calendar-grid");
+    const periodLabel = $("#period-label");
+    const selectedDateLabel = $("#selected-date-label");
+    const startInput = $("#event-start");
+    const endInput = $("#event-end");
+    const eventForm = $("#event-form");
+    const dayEvents = $("#day-events");
+    const categorySelect = $("#event-category");
+    const categoryEditorSelect = $("#category-editor-select");
+
+    const today = startOfDay(new Date());
+    let shownMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    let selectedDate = new Date(today);
+    let viewMode = "month";
+    let dragStart = null;
+    let dragEnd = null;
+    let isDragging = false;
+    let suppressClick = false;
+
+    const defaultCategories = [
+      { id: "general", name: "General", color: "#5e5ce6" },
+      { id: "work", name: "Work", color: "#007aff" },
+      { id: "personal", name: "Personal", color: "#34c759" },
+      { id: "family", name: "Family", color: "#ff2d55" }
+    ];
+
+    function readStorage(key, fallback) {
+      try {
+        const value = JSON.parse(localStorage.getItem(key));
+        return value ?? fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    let categories = readStorage("calendar-categories", defaultCategories);
+    let events = readStorage("calendar-events", []).map(normalizeEvent);
+
+    function normalizeEvent(item) {
+      const startDate = item.startDate || item.date || dateKey(today);
+      return {
+        id: item.id || crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`,
+        name: item.name || "Untitled",
+        type: item.type || item.eventType || "event",
+        categoryId: item.categoryId || "general",
+        startDate,
+        endDate: item.endDate || startDate,
+        repeat: item.repeat || "none"
+      };
+    }
+
+    function startOfDay(date) {
+      return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    }
+
+    function dateKey(date) {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
+
+    function parseDate(key) {
+      const [year, month, day] = key.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function dayNumber(date) {
+      return Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86400000);
+    }
+
+    function saveEvents() {
+      localStorage.setItem("calendar-events", JSON.stringify(events));
+    }
+
+    function saveCategories() {
+      localStorage.setItem("calendar-categories", JSON.stringify(categories));
+    }
+
+    function categoryFor(id) {
+      return categories.find(category => category.id === id) || categories[0];
+    }
+
+    function colorForItem(item) {
+      if (item.type === "holiday") return "#d92d25";
+      return categoryFor(item.categoryId)?.color || "#5e5ce6";
+    }
+
+    function renderCategoryOptions() {
+      const currentEventCategory = categorySelect.value;
+      const currentEditCategory = categoryEditorSelect.value;
+
+      categorySelect.replaceChildren();
+      categoryEditorSelect.replaceChildren();
+
+      categories.forEach(category => {
+        for (const select of [categorySelect, categoryEditorSelect]) {
+          const option = document.createElement("option");
+          option.value = category.id;
+          option.textContent = category.name;
+          select.appendChild(option);
+        }
+      });
+
+      if (categories.some(category => category.id === currentEventCategory)) {
+        categorySelect.value = currentEventCategory;
+      }
+      if (categories.some(category => category.id === currentEditCategory)) {
+        categoryEditorSelect.value = currentEditCategory;
+      }
+      loadCategoryEditor();
+    }
+
+    function loadCategoryEditor() {
+      const category = categoryFor(categoryEditorSelect.value);
+      if (!category) return;
+      $("#category-name").value = category.name;
+      $("#category-color").value = category.color;
+      $("#delete-category").disabled = categories.length <= 1;
+    }
+
+    function nthWeekday(year, month, weekday, occurrence) {
+      const first = new Date(year, month, 1);
+      const offset = (weekday - first.getDay() + 7) % 7;
+      return new Date(year, month, 1 + offset + (occurrence - 1) * 7);
+    }
+
+    function lastWeekday(year, month, weekday) {
+      const last = new Date(year, month + 1, 0);
+      const offset = (last.getDay() - weekday + 7) % 7;
+      return new Date(year, month + 1, -offset);
+    }
+
+    function easterSunday(year) {
+      const a = year % 19, b = Math.floor(year / 100), c = year % 100;
+      const d = Math.floor(b / 4), e = b % 4;
+      const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+      const h = (19 * a + b - d - g + 15) % 30;
+      const i = Math.floor(c / 4), k = c % 4;
+      const l = (32 + 2 * e + 2 * i - h - k) % 7;
+      const m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const month = Math.floor((h + l - 7 * m + 114) / 31);
+      return new Date(year, month - 1, ((h + l - 7 * m + 114) % 31) + 1);
+    }
+
+    function shiftDate(date, days) {
+      const result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    }
+
+    function fixedDate(year, month, day) {
+      return new Date(year, month - 1, day);
+    }
+
+    function holidayList(country, year) {
+      const easter = easterSunday(year);
+      const list = [];
+      const add = (name, date) => list.push({
+        id: `holiday-${country}-${year}-${name}`,
+        name, date: dateKey(date), type: "holiday"
+      });
+
+      switch (country) {
+        case "US":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Martin Luther King Jr. Day", nthWeekday(year, 0, 1, 3));
+          add("Presidents' Day", nthWeekday(year, 1, 1, 3));
+          add("Memorial Day", lastWeekday(year, 4, 1));
+          add("Juneteenth", fixedDate(year, 6, 19));
+          add("Independence Day", fixedDate(year, 7, 4));
+          add("Labor Day", nthWeekday(year, 8, 1, 1));
+          add("Columbus Day", nthWeekday(year, 9, 1, 2));
+          add("Veterans Day", fixedDate(year, 11, 11));
+          add("Thanksgiving", nthWeekday(year, 10, 4, 4));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          break;
+        case "GB":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Easter Monday", shiftDate(easter, 1));
+          add("Early May Bank Holiday", nthWeekday(year, 4, 1, 1));
+          add("Spring Bank Holiday", lastWeekday(year, 4, 1));
+          add("Summer Bank Holiday", lastWeekday(year, 7, 1));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          add("Boxing Day", fixedDate(year, 12, 26));
+          break;
+        case "CA":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Family Day", nthWeekday(year, 1, 1, 3));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Victoria Day", new Date(year, 4, 24 - ((new Date(year, 4, 24).getDay() + 6) % 7)));
+          add("Canada Day", fixedDate(year, 7, 1));
+          add("Civic Holiday", nthWeekday(year, 6, 1, 1));
+          add("Labour Day", nthWeekday(year, 8, 1, 1));
+          add("Thanksgiving", nthWeekday(year, 9, 1, 2));
+          add("Remembrance Day", fixedDate(year, 11, 11));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          add("Boxing Day", fixedDate(year, 12, 26));
+          break;
+        case "AU":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Australia Day", fixedDate(year, 1, 26));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Easter Monday", shiftDate(easter, 1));
+          add("Anzac Day", fixedDate(year, 4, 25));
+          add("King's Birthday (common date)", nthWeekday(year, 5, 1, 2));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          add("Boxing Day", fixedDate(year, 12, 26));
+          break;
+        case "DE":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Easter Monday", shiftDate(easter, 1));
+          add("Labour Day", fixedDate(year, 5, 1));
+          add("Ascension Day", shiftDate(easter, 39));
+          add("Whit Monday", shiftDate(easter, 50));
+          add("German Unity Day", fixedDate(year, 10, 3));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          add("Second Day of Christmas", fixedDate(year, 12, 26));
+          break;
+        case "FR":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Easter Monday", shiftDate(easter, 1));
+          add("Labour Day", fixedDate(year, 5, 1));
+          add("Victory in Europe Day", fixedDate(year, 5, 8));
+          add("Ascension Day", shiftDate(easter, 39));
+          add("Whit Monday", shiftDate(easter, 50));
+          add("Bastille Day", fixedDate(year, 7, 14));
+          add("Assumption", fixedDate(year, 8, 15));
+          add("All Saints' Day", fixedDate(year, 11, 1));
+          add("Armistice Day", fixedDate(year, 11, 11));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          break;
+        case "ES":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Epiphany", fixedDate(year, 1, 6));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Labour Day", fixedDate(year, 5, 1));
+          add("Assumption", fixedDate(year, 8, 15));
+          add("Spanish National Day", fixedDate(year, 10, 12));
+          add("All Saints' Day", fixedDate(year, 11, 1));
+          add("Constitution Day", fixedDate(year, 12, 6));
+          add("Immaculate Conception", fixedDate(year, 12, 8));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          break;
+        case "IN":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Republic Day", fixedDate(year, 1, 26));
+          add("Independence Day", fixedDate(year, 8, 15));
+          add("Gandhi Jayanti", fixedDate(year, 10, 2));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          break;
+        case "JP":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Coming of Age Day", nthWeekday(year, 0, 1, 2));
+          add("National Foundation Day", fixedDate(year, 2, 11));
+          add("Showa Day", fixedDate(year, 4, 29));
+          add("Constitution Memorial Day", fixedDate(year, 5, 3));
+          add("Greenery Day", fixedDate(year, 5, 4));
+          add("Children's Day", fixedDate(year, 5, 5));
+          add("Marine Day", nthWeekday(year, 6, 1, 3));
+          add("Mountain Day", fixedDate(year, 8, 11));
+          add("Respect for the Aged Day", nthWeekday(year, 8, 1, 3));
+          add("Sports Day", nthWeekday(year, 9, 1, 2));
+          add("Culture Day", fixedDate(year, 11, 3));
+          add("Labor Thanksgiving Day", fixedDate(year, 11, 23));
+          break;
+        case "BR":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Carnival (approx.)", shiftDate(easter, -47));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Tiradentes Day", fixedDate(year, 4, 21));
+          add("Labour Day", fixedDate(year, 5, 1));
+          add("Independence Day", fixedDate(year, 9, 7));
+          add("Our Lady of Aparecida", fixedDate(year, 10, 12));
+          add("Republic Day", fixedDate(year, 11, 15));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          break;
+        case "MX":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Constitution Day", fixedDate(year, 2, 5));
+          add("Benito Juárez Birthday", fixedDate(year, 3, 21));
+          add("Labour Day", fixedDate(year, 5, 1));
+          add("Independence Day", fixedDate(year, 9, 16));
+          add("Revolution Day", fixedDate(year, 11, 20));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          break;
+        case "ZA":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Human Rights Day", fixedDate(year, 3, 21));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Family Day", shiftDate(easter, 1));
+          add("Freedom Day", fixedDate(year, 4, 27));
+          add("Workers' Day", fixedDate(year, 5, 1));
+          add("Youth Day", fixedDate(year, 6, 16));
+          add("National Women's Day", fixedDate(year, 8, 9));
+          add("Heritage Day", fixedDate(year, 9, 24));
+          add("Day of Reconciliation", fixedDate(year, 12, 16));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          add("Day of Goodwill", fixedDate(year, 12, 26));
+          break;
+        case "NG":
+          add("New Year's Day", fixedDate(year, 1, 1));
+          add("Good Friday", shiftDate(easter, -2));
+          add("Easter Monday", shiftDate(easter, 1));
+          add("Workers' Day", fixedDate(year, 5, 1));
+          add("Democracy Day", fixedDate(year, 6, 12));
+          add("Independence Day", fixedDate(year, 10, 1));
+          add("Christmas Day", fixedDate(year, 12, 25));
+          add("Boxing Day", fixedDate(year, 12, 26));
+          break;
+      }
+      return list;
+    }
+
+    function eventOccursOn(event, date) {
+      const start = parseDate(event.startDate);
+      const end = parseDate(event.endDate || event.startDate);
+      const offset = dayNumber(date) - dayNumber(start);
+      const duration = Math.max(0, dayNumber(end) - dayNumber(start));
+
+      if (offset < 0) return false;
+      if (event.repeat === "none" || !event.repeat) {
+        return offset <= duration;
+      }
+
+      // Repeating events recur on their start-date pattern.
+      const candidateStart = shiftDate(date, -Math.min(offset, duration));
+      const daysSinceStart = dayNumber(candidateStart) - dayNumber(start);
+      if (daysSinceStart < 0) return false;
+
+      switch (event.repeat) {
+        case "daily": return daysSinceStart % 1 === 0;
+        case "weekly": return daysSinceStart % 7 === 0;
+        case "monthly":
+          return candidateStart.getDate() === start.getDate() &&
+            candidateStart >= start;
+        case "yearly":
+          return candidateStart.getDate() === start.getDate() &&
+            candidateStart.getMonth() === start.getMonth() &&
+            candidateStart >= start;
+        default: return offset <= duration;
+      }
+    }
+
+    function getItemsForDate(key) {
+      const date = parseDate(key);
+      const holidays = holidayList(countrySelect.value, date.getFullYear())
+        .filter(item => item.date === key);
+      const personal = events.filter(event => eventOccursOn(event, date));
+      return [...holidays, ...personal];
+    }
+
+    function startOfWeek(date) {
+      const result = startOfDay(date);
+      result.setDate(result.getDate() - ((result.getDay() + 6) % 7));
+      return result;
+    }
+
+    function renderCalendar() {
+      const first = viewMode === "week"
+        ? startOfWeek(selectedDate)
+        : new Date(shownMonth.getFullYear(), shownMonth.getMonth(), 1);
+
+      if (viewMode === "week") {
+        const last = shiftDate(first, 6);
+        periodLabel.textContent = `${first.toLocaleDateString(undefined, { month: "short", day: "numeric" })} – ${last.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}`;
+      } else {
+        periodLabel.textContent = shownMonth.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+      }
+
+      grid.classList.toggle("week-view", viewMode === "week");
+      grid.replaceChildren();
+
+      let firstCell;
+      let count;
+      if (viewMode === "week") {
+        firstCell = first;
+        count = 7;
+      } else {
+        const mondayOffset = (first.getDay() + 6) % 7;
+        firstCell = new Date(first.getFullYear(), first.getMonth(), 1 - mondayOffset);
+        count = 42;
+      }
+
+      for (let index = 0; index < count; index++) {
+        const date = shiftDate(firstCell, index);
+        const key = dateKey(date);
+        const cell = document.createElement("button");
+        cell.type = "button";
+        cell.className = "day-cell";
+        cell.dataset.date = key;
+        cell.setAttribute("role", "gridcell");
+
+        if (viewMode === "month" && date.getMonth() !== shownMonth.getMonth()) {
+          cell.classList.add("outside-month");
+        }
+        if (key === dateKey(today)) cell.classList.add("is-today");
+        if (key === dateKey(selectedDate)) cell.classList.add("selected");
+
+        const number = document.createElement("span");
+        number.className = "day-number";
+        number.textContent = viewMode === "week"
+          ? date.toLocaleDateString(undefined, { weekday: "short" }) + " " + date.getDate()
+          : date.getDate();
+        cell.appendChild(number);
+
+        const items = getItemsForDate(key);
+        items.slice(0, viewMode === "week" ? 8 : 2).forEach(item => {
+          const badge = document.createElement("span");
+          badge.className = `day-item ${item.type === "holiday" ? "holiday" : ""}`;
+          badge.textContent = item.name;
+          const color = colorForItem(item);
+          if (item.type !== "holiday") {
+            badge.style.background = `color-mix(in srgb, ${color} 18%, var(--surface))`;
+            badge.style.color = color;
+          }
+          cell.appendChild(badge);
+        });
+
+        if (items.length > (viewMode === "week" ? 8 : 2)) {
+          const more = document.createElement("span");
+          more.className = "more-items";
+          more.textContent = `+${items.length - (viewMode === "week" ? 8 : 2)} more`;
+          cell.appendChild(more);
+        }
+
+        cell.addEventListener("pointerdown", () => {
+          dragStart = key;
+          dragEnd = key;
+          isDragging = false;
+        });
+        cell.addEventListener("pointerenter", () => {
+          if (!dragStart) return;
+          dragEnd = key;
+          if (dragStart !== dragEnd) {
+            isDragging = true;
+            updateDragHighlight();
+          }
+        });
+        cell.addEventListener("click", () => {
+          if (suppressClick) {
+            suppressClick = false;
+            return;
+          }
+          selectedDate = date;
+          startInput.value = key;
+          endInput.value = key;
+          renderCalendar();
+        });
+
+        grid.appendChild(cell);
+      }
+
+      renderSelectedDay();
+    }
+
+    function updateDragHighlight() {
+      if (!dragStart || !dragEnd) return;
+      const low = dragStart < dragEnd ? dragStart : dragEnd;
+      const high = dragStart < dragEnd ? dragEnd : dragStart;
+      grid.querySelectorAll(".day-cell").forEach(cell => {
+        cell.classList.toggle(
+          "drag-range",
+          cell.dataset.date >= low && cell.dataset.date <= high
+        );
+      });
+    }
+
+    window.addEventListener("pointerup", () => {
+      if (!dragStart) return;
+      if (isDragging && dragEnd) {
+        const start = dragStart < dragEnd ? dragStart : dragEnd;
+        const end = dragStart < dragEnd ? dragEnd : dragStart;
+        startInput.value = start;
+        endInput.value = end;
+        $("#event-type").value = "task";
+        selectedDate = parseDate(start);
+        if (viewMode === "month") {
+          shownMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+        }
+        suppressClick = true;
+        renderCalendar();
+        $("#event-title").focus();
+      }
+      dragStart = null;
+      dragEnd = null;
+      isDragging = false;
+    });
+
+    function renderSelectedDay() {
+      selectedDateLabel.textContent = selectedDate.toLocaleDateString(undefined, {
+        weekday: "long", month: "long", day: "numeric", year: "numeric"
+      });
+      dayEvents.replaceChildren();
+
+      const items = getItemsForDate(dateKey(selectedDate));
+      if (!items.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty-message";
+        empty.textContent = "Nothing planned for this day.";
+        dayEvents.appendChild(empty);
+        return;
+      }
+
+      items.forEach(item => {
+        const row = document.createElement("div");
+        row.className = "event-row";
+        const color = colorForItem(item);
+        row.style.setProperty("--event-color", color);
+
+        const info = document.createElement("div");
+        const title = document.createElement("strong");
+        title.textContent = item.name;
+        const detail = document.createElement("small");
+
+        if (item.type === "holiday") {
+          detail.textContent = "National holiday";
+        } else {
+          const category = categoryFor(item.categoryId);
+          const repeat = item.repeat && item.repeat !== "none"
+            ? ` · Repeats ${item.repeat}`
+            : "";
+          detail.textContent = `${item.type} · ${category?.name || "General"}${repeat}`;
+        }
+
+        info.append(title, detail);
+
+        if (item.type !== "holiday") {
+          const tag = document.createElement("span");
+          tag.className = "event-kind";
+          tag.textContent = item.type;
+          info.appendChild(tag);
+
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.className = "remove-event";
+          remove.textContent = "×";
+          remove.setAttribute("aria-label", `Delete ${item.name}`);
+          remove.addEventListener("click", () => {
+            events = events.filter(event => event.id !== item.id);
+            saveEvents();
+            renderCalendar();
+          });
+          row.append(info, remove);
+        } else {
+          row.appendChild(info);
+        }
+        dayEvents.appendChild(row);
+      });
+    }
+
+    $("#previous-period").addEventListener("click", () => {
+      if (viewMode === "week") {
+        selectedDate = shiftDate(selectedDate, -7);
+      } else {
+        shownMonth = new Date(shownMonth.getFullYear(), shownMonth.getMonth() - 1, 1);
+        selectedDate = new Date(shownMonth.getFullYear(), shownMonth.getMonth(), 1);
+      }
+      renderCalendar();
+    });
+
+    $("#next-period").addEventListener("click", () => {
+      if (viewMode === "week") {
+        selectedDate = shiftDate(selectedDate, 7);
+      } else {
+        shownMonth = new Date(shownMonth.getFullYear(), shownMonth.getMonth() + 1, 1);
+        selectedDate = new Date(shownMonth.getFullYear(), shownMonth.getMonth(), 1);
+      }
+      renderCalendar();
+    });
+
+    $("#today-button").addEventListener("click", () => {
+      selectedDate = new Date(today);
+      shownMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+      startInput.value = endInput.value = dateKey(today);
+      renderCalendar();
+    });
+
+    document.querySelectorAll(".view-button").forEach(button => {
+      button.addEventListener("click", () => {
+        viewMode = button.dataset.view;
+        document.querySelectorAll(".view-button").forEach(item =>
+          item.classList.toggle("active", item === button)
+        );
+        renderCalendar();
+      });
+    });
+
+    $("#theme-button").addEventListener("click", () => {
+      const dark = document.body.classList.toggle("dark");
+      localStorage.setItem("calendar-dark-mode", dark ? "yes" : "no");
+      $("#theme-button").textContent = dark ? "Light mode" : "Dark mode";
+    });
+
+    countrySelect.value = localStorage.getItem("calendar-country") || "US";
+    countrySelect.addEventListener("change", () => {
+      localStorage.setItem("calendar-country", countrySelect.value);
+      renderCalendar();
+    });
+
+    eventForm.addEventListener("submit", event => {
+      event.preventDefault();
+      const formData = new FormData(eventForm);
+      const name = String(formData.get("title") || "").trim();
+      const startDate = String(formData.get("startDate"));
+      const endDate = String(formData.get("endDate"));
+      if (!name || !startDate || !endDate || endDate < startDate) {
+        alert("Please enter a name and a valid date range.");
+        return;
+      }
+
+      events.push({
+        id: crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`,
+        name,
+        type: String(formData.get("type") || "event"),
+        categoryId: String(formData.get("category") || categories[0].id),
+        startDate,
+        endDate,
+        repeat: String(formData.get("repeat") || "none")
+      });
+
+      saveEvents();
+      selectedDate = parseDate(startDate);
+      shownMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+      eventForm.reset();
+      startInput.value = endInput.value = dateKey(selectedDate);
+      renderCalendar();
+    });
+
+    categoryEditorSelect.addEventListener("change", loadCategoryEditor);
+
+    $("#category-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const category = categoryFor(categoryEditorSelect.value);
+      const name = $("#category-name").value.trim();
+      if (!category || !name) return;
+
+      category.name = name;
+      category.color = $("#category-color").value;
+      saveCategories();
+      renderCategoryOptions();
+      categoryEditorSelect.value = category.id;
+      categorySelect.value = category.id;
+      loadCategoryEditor();
+      renderCalendar();
+    });
+
+    $("#new-category").addEventListener("click", () => {
+      const name = prompt("Name for the new category:");
+      if (!name || !name.trim()) return;
+
+      const category = {
+        id: `category-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        name: name.trim().slice(0, 30),
+        color: "#5e5ce6"
+      };
+      categories.push(category);
+      saveCategories();
+      renderCategoryOptions();
+      categoryEditorSelect.value = category.id;
+      categorySelect.value = category.id;
+      loadCategoryEditor();
+    });
+
+    $("#delete-category").addEventListener("click", () => {
+      const category = categoryFor(categoryEditorSelect.value);
+      if (!category || categories.length <= 1) return;
+      if (!confirm(`Delete the "${category.name}" category? Existing items will move to General or the first remaining category.`)) return;
+
+      const fallback = categories.find(item => item.id !== category.id);
+      events.forEach(item => {
+        if (item.categoryId === category.id) item.categoryId = fallback.id;
+      });
+      categories = categories.filter(item => item.id !== category.id);
+      saveCategories();
+      saveEvents();
+      renderCategoryOptions();
+      renderCalendar();
+    });
+
+    if (localStorage.getItem("calendar-dark-mode") === "yes") {
+      document.body.classList.add("dark");
+      $("#theme-button").textContent = "Light mode";
+    }
+
+    renderCategoryOptions();
+    startInput.value = endInput.value = dateKey(selectedDate);
+    renderCalendar();
+  </script>
+</body>
+</html>

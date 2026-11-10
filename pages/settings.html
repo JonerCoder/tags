@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f2f2f7" />
+  <title>Settings</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #f2f2f7;
+      --card: #fff;
+      --text: #1c1c1e;
+      --secondary: #8e8e93;
+      --separator: rgba(60,60,67,.14);
+      --blue: #007aff;
+      --green: #34c759;
+      --search: #e3e3e8;
+      --switch-off: #e9e9eb;
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --page: #000;
+      --card: #1c1c1e;
+      --text: #f5f5f7;
+      --secondary: #98989f;
+      --separator: rgba(84,84,88,.65);
+      --blue: #0a84ff;
+      --green: #30d158;
+      --search: #2c2c2e;
+      --switch-off: #39393d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: var(--page);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      transition: background .18s ease, color .18s ease;
+    }
+
+    button, input { font: inherit; }
+
+    .page {
+      width: min(760px, 100%);
+      margin: 0 auto;
+      padding: 28px 24px 48px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .back-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 0;
+      border: 0;
+      background: transparent;
+      color: var(--blue);
+      cursor: pointer;
+    }
+
+    .back-arrow { font-size: 25px; line-height: 16px; }
+
+    .search {
+      width: min(280px, 55%);
+      padding: 10px 13px;
+      border: 0;
+      border-radius: 11px;
+      outline: none;
+      background: var(--search);
+      color: var(--text);
+    }
+
+    .search::placeholder { color: var(--secondary); }
+
+    h1 {
+      margin: 4px 0 22px;
+      font-size: clamp(36px, 8vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -1.7px;
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 28px;
+      padding: 16px;
+      border-radius: 16px;
+      background: var(--card);
+    }
+
+    .avatar {
+      width: 56px;
+      height: 56px;
+      flex: 0 0 56px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #70d7ff, #2f73e8 55%, #7546d8);
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .profile-name { margin: 0 0 4px; font-size: 19px; font-weight: 650; }
+    .profile-detail { margin: 0; color: var(--secondary); font-size: 14px; }
+
+    .section { margin-bottom: 26px; }
+
+    .section-title {
+      margin: 0 0 8px 14px;
+      color: var(--secondary);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .group {
+      overflow: hidden;
+      border-radius: 13px;
+      background: var(--card);
+    }
+
+    .row {
+      position: relative;
+      display: flex;
+      min-height: 56px;
+      align-items: center;
+      gap: 12px;
+      padding: 9px 14px;
+    }
+
+    .row + .row::before {
+      position: absolute;
+      top: 0;
+      right: 0;
+      left: 54px;
+      height: 1px;
+      background: var(--separator);
+      content: "";
+    }
+
+    .row-icon {
+      width: 29px;
+      height: 29px;
+      flex: 0 0 29px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      color: white;
+      font-size: 16px;
+    }
+
+    .blue { background: #3478f6; }
+    .green { background: #34c759; }
+    .orange { background: #ff9500; }
+    .purple { background: #af52de; }
+    .gray { background: #8e8e93; }
+
+    .row-label { min-width: 0; flex: 1; font-size: 16px; }
+
+    .theme-picker {
+      display: inline-flex;
+      gap: 3px;
+      padding: 3px;
+      border-radius: 9px;
+      background: var(--search);
+    }
+
+    .theme-option {
+      padding: 6px 10px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--secondary);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .theme-option[aria-pressed="true"] {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,.16);
+    }
+
+    .switch {
+      position: relative;
+      width: 51px;
+      height: 31px;
+      flex: 0 0 51px;
+      padding: 0;
+      border: 0;
+      border-radius: 99px;
+      background: var(--switch-off);
+      cursor: pointer;
+      transition: background .16s ease;
+    }
+
+    .switch::after {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 27px;
+      height: 27px;
+      border-radius: 50%;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,.25);
+      content: "";
+      transition: transform .16s ease;
+    }
+
+    .switch[aria-checked="true"] { background: var(--green); }
+    .switch[aria-checked="true"]::after { transform: translateX(20px); }
+
+    .wallpapers {
+      display: flex;
+      gap: 10px;
+    }
+
+    .wallpaper-choice {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .wallpaper-choice[aria-pressed="true"] {
+      outline: 2px solid var(--blue);
+      outline-offset: 2px;
+    }
+
+    [data-wallpaper="aurora"] { background: linear-gradient(135deg, #69d6e8, #7165d8 55%, #f378a8); }
+    [data-wallpaper="sunset"] { background: linear-gradient(135deg, #ffd36a, #ff765e 55%, #b3479e); }
+    [data-wallpaper="ocean"] { background: linear-gradient(135deg, #63e3d1, #2c89cf 55%, #364a9b); }
+    [data-wallpaper="midnight"] { background: linear-gradient(135deg, #30364f, #111827 55%, #5b477e); }
+
+    .note {
+      margin: 8px 14px 0;
+      color: var(--secondary);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .status {
+      min-height: 18px;
+      margin: 16px 4px 0;
+      color: var(--secondary);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .hidden { display: none !important; }
+    .no-results { display: none; padding: 24px; color: var(--secondary); text-align: center; }
+    .no-results.visible { display: block; }
+
+    @media (max-width: 520px) {
+      .page { padding: 20px 16px 36px; }
+      .row { gap: 10px; padding-right: 11px; padding-left: 11px; }
+      .row-label { font-size: 15px; }
+      .theme-option { padding: 6px 8px; font-size: 12px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="topbar">
+      <button class="back-button" id="backButton" type="button">
+        <span class="back-arrow" aria-hidden="true">‹</span>
+        <span>Back</span>
+      </button>
+      <input class="search" id="settingsSearch" type="search" placeholder="Search" aria-label="Search settings" />
+    </div>
+
+    <h1>Settings</h1>
+
+    <section class="profile searchable" data-search="tags desktop launchpage profile">
+      <div class="avatar" aria-hidden="true">T</div>
+      <div>
+        <p class="profile-name">Tags Desktop</p>
+        <p class="profile-detail">Launch page preferences</p>
+      </div>
+    </section>
+
+    <section class="section searchable" data-search="appearance light dark theme wallpaper background">
+      <h2 class="section-title">Appearance</h2>
+      <div class="group">
+        <div class="row">
+          <span class="row-icon gray" aria-hidden="true">◐</span>
+          <span class="row-label">Light / Dark</span>
+          <div class="theme-picker" role="group" aria-label="Desktop appearance">
+            <button class="theme-option" type="button" data-theme-choice="light" aria-pressed="false">Light</button>
+            <button class="theme-option" type="button" data-theme-choice="dark" aria-pressed="false">Dark</button>
+          </div>
+        </div>
+        <div class="row">
+          <span class="row-icon purple" aria-hidden="true">▧</span>
+          <span class="row-label">Wallpaper</span>
+          <div class="wallpapers" role="group" aria-label="Desktop wallpaper">
+            <button class="wallpaper-choice" type="button" data-wallpaper="aurora" aria-label="Aurora wallpaper" aria-pressed="false"></button>
+            <button class="wallpaper-choice" type="button" data-wallpaper="sunset" aria-label="Sunset wallpaper" aria-pressed="false"></button>
+            <button class="wallpaper-choice" type="button" data-wallpaper="ocean" aria-label="Ocean wallpaper" aria-pressed="false"></button>
+            <button class="wallpaper-choice" type="button" data-wallpaper="midnight" aria-label="Midnight wallpaper" aria-pressed="false"></button>
+          </div>
+        </div>
+      </div>
+      <p class="note">Appearance and wallpaper apply to the launch page and are saved on this device.</p>
+    </section>
+
+    <section class="section searchable" data-search="dock magnification icons">
+      <h2 class="section-title">Dock</h2>
+      <div class="group">
+        <div class="row">
+          <span class="row-icon blue" aria-hidden="true">⌂</span>
+          <span class="row-label">Icon Magnification</span>
+          <button class="switch" type="button" role="switch" aria-label="Dock icon magnification" aria-checked="true" data-setting="dockMagnification"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section searchable" data-search="desktop app labels names">
+      <h2 class="section-title">Desktop</h2>
+      <div class="group">
+        <div class="row">
+          <span class="row-icon orange" aria-hidden="true">▦</span>
+          <span class="row-label">Show App Labels</span>
+          <button class="switch" type="button" role="switch" aria-label="Show app labels" aria-checked="true" data-setting="appLabels"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section searchable" data-search="accessibility reduce motion animations">
+      <h2 class="section-title">Accessibility</h2>
+      <div class="group">
+        <div class="row">
+          <span class="row-icon green" aria-hidden="true">◉</span>
+          <span class="row-label">Reduce Motion</span>
+          <button class="switch" type="button" role="switch" aria-label="Reduce motion" aria-checked="false" data-setting="reduceMotion"></button>
+        </div>
+      </div>
+      <p class="note">Reduces animations on the launch page.</p>
+    </section>
+
+    <div class="no-results" id="noResults">No settings found</div>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+  </main>
+
+  <script>
+    "use strict";
+
+    const searchInput = document.getElementById("settingsSearch");
+    const sections = [...document.querySelectorAll(".searchable")];
+    const noResults = document.getElementById("noResults");
+    const status = document.getElementById("status");
+    const themeButtons = [...document.querySelectorAll("[data-theme-choice]")];
+    const wallpaperButtons = [...document.querySelectorAll("[data-wallpaper]")];
+
+    const defaults = {
+      theme: "dark",
+      wallpaper: "aurora",
+      dockMagnification: "true",
+      appLabels: "true",
+      reduceMotion: "false"
+    };
+
+    function readSetting(key) {
+      try {
+        return localStorage.getItem(`tags-settings-${key}`) ?? defaults[key];
+      } catch {
+        return defaults[key];
+      }
+    }
+
+    function saveSetting(key, value) {
+      try {
+        localStorage.setItem(`tags-settings-${key}`, String(value));
+      } catch {
+        // The setting can still be applied for this session.
+      }
+    }
+
+    function currentSettings() {
+      return {
+        theme: readSetting("theme"),
+        wallpaper: readSetting("wallpaper"),
+        dockMagnification: readSetting("dockMagnification"),
+        appLabels: readSetting("appLabels"),
+        reduceMotion: readSetting("reduceMotion")
+      };
+    }
+
+    function applySettings() {
+      const settings = currentSettings();
+
+      document.documentElement.dataset.theme = settings.theme;
+      document.querySelector('meta[name="theme-color"]').content =
+        settings.theme === "dark" ? "#000000" : "#f2f2f7";
+
+      themeButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.themeChoice === settings.theme));
+      });
+
+      wallpaperButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.wallpaper === settings.wallpaper));
+      });
+
+      document.querySelectorAll("[data-setting]").forEach((button) => {
+        button.setAttribute("aria-checked", String(settings[button.dataset.setting] === "true"));
+      });
+
+      if (window.parent !== window) {
+        window.parent.postMessage(
+          { type: "tags-settings-change", settings },
+          window.location.origin
+        );
+        status.textContent = "Settings applied to the launch page.";
+      } else {
+        status.textContent = "Saved. Open Settings from the launch page to apply preferences there.";
+      }
+    }
+
+    themeButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        saveSetting("theme", button.dataset.themeChoice);
+        applySettings();
+      });
+    });
+
+    wallpaperButtons.forEach((button) => {
+      button.addEventListener("click", () => {
+        saveSetting("wallpaper", button.dataset.wallpaper);
+        applySettings();
+      });
+    });
+
+    document.querySelectorAll("[data-setting]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const nextValue = button.getAttribute("aria-checked") !== "true";
+        saveSetting(button.dataset.setting, nextValue);
+        applySettings();
+      });
+    });
+
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      let count = 0;
+
+      sections.forEach((section) => {
+        const matches = !query ||
+          `${section.textContent} ${section.dataset.search || ""}`.toLowerCase().includes(query);
+        section.classList.toggle("hidden", !matches);
+        if (matches) count++;
+      });
+
+      noResults.classList.toggle("visible", count === 0);
+    });
+
+    document.getElementById("backButton").addEventListener("click", () => {
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: "close-settings" }, window.location.origin);
+      } else if (history.length > 1) {
+        history.back();
+      }
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key?.startsWith("tags-settings-")) applySettings();
+    });
+
+    applySettings();
+  </script>
+</body>
+</html>

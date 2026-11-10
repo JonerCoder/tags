@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EBMS Launchpage</title>
+  <link rel="icon" type="image/png" href="ebms.png">
+
+  <!-- CodeMirror editor styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/eclipse.min.css">
+
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #111827;
+      --panel: #1f2937;
+      --panel-2: #0f172a;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --accent: #8b5cf6;
+      --border: #334155;
+      --shadow: rgba(0, 0, 0, 0.3);
+      --button-secondary: #334155;
+      --button-secondary-text: #f8fafc;
+      --tab-bg: #0f172a;
+      --tab-active: #1f2937;
+      --header-bg: #1a2436;
+    }
+
+    html.theme-light {
+      color-scheme: light;
+      --bg: #eef2ff;
+      --panel: #ffffff;
+      --panel-2: #e2e8f0;
+      --text: #111827;
+      --muted: #475569;
+      --accent: #7c3aed;
+      --border: #cbd5e1;
+      --shadow: rgba(15, 23, 42, 0.08);
+      --button-secondary: #e2e8f0;
+      --button-secondary-text: #0f172a;
+      --tab-bg: #e2e8f0;
+      --tab-active: #ffffff;
+      --header-bg: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--panel-2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.2rem;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      filter: brightness(1.08);
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .secondary {
+      background: var(--button-secondary);
+      color: var(--button-secondary-text);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 14px;
+      padding: 20px;
+    }
+
+    .editor-column,
+    .preview-panel {
+      min-width: 0;
+      min-height: 520px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: 0 10px 20px var(--shadow);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 6px;
+      padding: 10px 12px 0;
+      flex-wrap: wrap;
+      background: var(--tab-bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 9px 12px;
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: 10px 10px 0 0;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .tab.active {
+      border-color: var(--border);
+      background: var(--tab-active);
+      color: var(--text);
+    }
+
+    .editor-panel {
+      min-height: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header,
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: var(--header-bg);
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .editor-pane {
+      min-height: 0;
+      flex: 1;
+    }
+
+    .editor-pane[hidden] {
+      display: none;
+    }
+
+    .CodeMirror {
+      height: 100%;
+      min-height: 460px;
+      font: 14px/1.5 "Consolas", "Courier New", monospace;
+    }
+
+    .preview-header {
+      flex: 0 0 auto;
+    }
+
+    iframe {
+      display: block;
+      width: 100%;
+      min-height: 460px;
+      flex: 1;
+      border: 0;
+      background: white;
+    }
+
+    @media (max-width: 900px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .actions button {
+        flex: 1;
+      }
+
+      .workspace {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Code Playground</h1>
+    <div class="actions">
+      <button id="themeBtn" class="secondary" type="button">☀️ Light</button>
+      <button id="resetBtn" class="secondary" type="button">Reset</button>
+      <button id="formatBtn" class="secondary" type="button">Format</button>
+      <button id="downloadBtn" class="secondary" type="button">Download HTML</button>
+      <button id="zipBtn" class="primary" type="button">Export ZIP</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <section class="editor-column" aria-label="Code editor">
+      <div class="tabs" role="tablist" aria-label="Code files">
+        <button class="tab active" id="tab-html" type="button" role="tab"
+                aria-selected="true" aria-controls="pane-html" data-file="html">HTML</button>
+        <button class="tab" id="tab-css" type="button" role="tab"
+                aria-selected="false" aria-controls="pane-css" data-file="css">CSS</button>
+        <button class="tab" id="tab-js" type="button" role="tab"
+                aria-selected="false" aria-controls="pane-js" data-file="js">JavaScript</button>
+      </div>
+
+      <div class="editor-panel">
+        <div class="panel-header">
+          <span id="fileLabel">HTML</span>
+          <span id="fileName">index.html</span>
+        </div>
+
+        <div class="editor-pane" id="pane-html" role="tabpanel" aria-labelledby="tab-html">
+          <textarea id="htmlCode" spellcheck="false"><main class="demo">
+  <h1>Hello, world! 👋</h1>
+  <p>Make something cool.</p>
+  <button id="helloBtn">Click me</button>
+  <p id="message"></p>
+</main></textarea>
+        </div>
+
+        <div class="editor-pane" id="pane-css" role="tabpanel" aria-labelledby="tab-css" hidden>
+          <textarea id="cssCode" spellcheck="false">body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #eef2ff, #dbeafe);
+  color: #1f2937;
+}
+
+.demo {
+  padding: 30px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #8b5cf6;
+  color: white;
+  cursor: pointer;
+}</textarea>
+        </div>
+
+        <div class="editor-pane" id="pane-js" role="tabpanel" aria-labelledby="tab-js" hidden>
+          <textarea id="jsCode" spellcheck="false">document.getElementById("helloBtn").addEventListener("click", () => {
+  document.getElementById("message").textContent =
+    "Nice! Your code is running.";
+});</textarea>
+        </div>
+      </div>
+    </section>
+
+    <section class="preview-panel" aria-label="Live preview">
+      <div class="preview-header">
+        <span>Live Preview</span>
+        <span>Sandboxed output</span>
+      </div>
+      <iframe id="previewFrame" title="Live preview" sandbox="allow-scripts"></iframe>
+    </section>
+  </main>
+
+  <!-- Editor, formatter, and ZIP libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prettier@3.3.3/standalone.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prettier@3.3.3/plugins/html.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prettier@3.3.3/plugins/postcss.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prettier@3.3.3/plugins/babel.js"></script>
+
+  <script>
+    const defaults = {
+      html: `<main class="demo">
+  <h1>Hello, world! 👋</h1>
+  <p>Make something cool.</p>
+  <button id="helloBtn">Click me</button>
+  <p id="message"></p>
+</main>`,
+      css: `body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #eef2ff, #dbeafe);
+  color: #1f2937;
+}
+
+.demo {
+  padding: 30px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #8b5cf6;
+  color: white;
+  cursor: pointer;
+}`,
+      js: `document.getElementById("helloBtn").addEventListener("click", () => {
+  document.getElementById("message").textContent =
+    "Nice! Your code is running.";
+});`
+    };
+
+    const previewFrame = document.getElementById("previewFrame");
+    const themeButton = document.getElementById("themeBtn");
+    const tabs = Array.from(document.querySelectorAll(".tab"));
+    const panes = {
+      html: document.getElementById("pane-html"),
+      css: document.getElementById("pane-css"),
+      js: document.getElementById("pane-js")
+    };
+    const labels = {
+      html: { label: "HTML", name: "index.html" },
+      css: { label: "CSS", name: "styles.css" },
+      js: { label: "JavaScript", name: "script.js" }
+    };
+
+    if (!window.CodeMirror) {
+      document.querySelectorAll(".editor-pane textarea").forEach((textarea) => {
+        textarea.style.display = "block";
+        textarea.style.width = "100%";
+        textarea.style.height = "460px";
+        textarea.style.background = "#0b1120";
+        textarea.style.color = "#dbeafe";
+      });
+    }
+
+    function createEditor(id, mode) {
+      const textarea = document.getElementById(id);
+
+      if (!window.CodeMirror) {
+        return {
+          getValue: () => textarea.value,
+          setValue: (value) => { textarea.value = value; },
+          on: (eventName, callback) => {
+            if (eventName === "change") {
+              textarea.addEventListener("input", callback);
+            }
+          },
+          refresh: () => {}
+        };
+      }
+
+      return CodeMirror.fromTextArea(textarea, {
+        mode,
+        theme: document.documentElement.classList.contains("theme-light")
+          ? "eclipse"
+          : "material-darker",
+        lineNumbers: true,
+        indentUnit: 2,
+        tabSize: 2,
+        lineWrapping: false,
+        viewportMargin: Infinity
+      });
+    }
+
+    const editors = {
+      html: createEditor("htmlCode", "htmlmixed"),
+      css: createEditor("cssCode", "css"),
+      js: createEditor("jsCode", "javascript")
+    };
+
+    let activeFile = "html";
+    let renderTimer;
+
+    function getCode(file) {
+      return editors[file].getValue();
+    }
+
+    function schedulePreview() {
+      clearTimeout(renderTimer);
+      renderTimer = setTimeout(renderPreview, 250);
+    }
+
+    function safeScriptString(source) {
+      return JSON.stringify(source)
+        .replace(/</g, "\\u003c")
+        .replace(/\u2028/g, "\\u2028")
+        .replace(/\u2029/g, "\\u2029");
+    }
+
+    function buildDocument() {
+      const html = getCode("html");
+      const css = getCode("css").replace(/<\/style/gi, "<\\/style");
+      const js = safeScriptString(getCode("js"));
+
+      const runtime =
+        "<script>" +
+        "try{" +
+          "(0,eval)(" + js + ");" +
+        "}catch(error){" +
+          "var pre=document.createElement('pre');" +
+          "pre.style.cssText='color:#b91c1c;padding:12px;white-space:pre-wrap;';" +
+          "pre.textContent=error.stack||error.message;" +
+          "document.body.appendChild(pre);" +
+        "}" +
+        "</scr" + "ipt>";
+
+      return (
+        "<!doctype html>" +
+        "<html lang=\"en\">" +
+        "<head>" +
+          "<meta charset=\"utf-8\">" +
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">" +
+          "<title>My Playground Project</title>" +
+          "<style>" + css + "</style>" +
+        "</head>" +
+        "<body>" + html + runtime + "</body>" +
+        "</html>"
+      );
+    }
+
+    function renderPreview() {
+      previewFrame.srcdoc = buildDocument();
+    }
+
+    function setActiveFile(file) {
+      activeFile = file;
+
+      for (const [key, pane] of Object.entries(panes)) {
+        pane.hidden = key !== file;
+      }
+
+      tabs.forEach((tab) => {
+        const selected = tab.dataset.file === file;
+        tab.classList.toggle("active", selected);
+        tab.setAttribute("aria-selected", String(selected));
+        tab.tabIndex = selected ? 0 : -1;
+      });
+
+      document.getElementById("fileLabel").textContent = labels[file].label;
+      document.getElementById("fileName").textContent = labels[file].name;
+
+      requestAnimationFrame(() => editors[file].refresh());
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => setActiveFile(tab.dataset.file));
+    });
+
+    Object.values(editors).forEach((editor) => {
+      editor.on("change", schedulePreview);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      editors.html.setValue(defaults.html);
+      editors.css.setValue(defaults.css);
+      editors.js.setValue(defaults.js);
+      renderPreview();
+    });
+
+    document.getElementById("formatBtn").addEventListener("click", async () => {
+      if (!window.prettier || !window.prettierPlugins) {
+        alert("The formatter could not load. Check your internet connection and try again.");
+        return;
+      }
+
+      const settings = {
+        html: { parser: "html", plugins: [window.prettierPlugins.html] },
+        css: { parser: "css", plugins: [window.prettierPlugins.postcss] },
+        js: { parser: "babel", plugins: [window.prettierPlugins.babel] }
+      };
+
+      try {
+        const formatted = await prettier.format(getCode(activeFile), settings[activeFile]);
+        editors[activeFile].setValue(formatted.trimEnd());
+        renderPreview();
+      } catch (error) {
+        alert("Could not format this file: " + error.message);
+      }
+    });
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const blob = new Blob([buildDocument()], { type: "text/html;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+
+      link.href = url;
+      link.download = "playground.html";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    });
+
+    document.getElementById("zipBtn").addEventListener("click", async () => {
+      if (!window.JSZip) {
+        alert("The ZIP exporter could not load. Check your internet connection and try again.");
+        return;
+      }
+
+      try {
+        const zip = new JSZip();
+        zip.file("index.html", buildDocument());
+        zip.file("styles.css", getCode("css"));
+        zip.file("script.js", getCode("js"));
+
+        const blob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "playground.zip";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      } catch (error) {
+        alert("Could not create ZIP: " + error.message);
+      }
+    });
+
+    themeButton.addEventListener("click", () => {
+      const isLight = document.documentElement.classList.toggle("theme-light");
+      themeButton.textContent = isLight ? "🌙 Dark" : "☀️ Light";
+
+      Object.values(editors).forEach((editor) => {
+        if (editor.setOption) {
+          editor.setOption("theme", isLight ? "eclipse" : "material-darker");
+        }
+      });
+    });
+
+    setActiveFile("html");
+    renderPreview();
+  </script>
+</body>
+</html>

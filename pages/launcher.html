@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Library</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #eee;
+      background: #101113;
+      font-family: system-ui, sans-serif;
+    }
+
+    #constellation-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(1100px, 92%);
+      margin: 0 auto;
+      padding: 64px 0;
+    }
+
+    header { margin-bottom: 32px; }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      letter-spacing: -0.05em;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #999da3;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 14px;
+    }
+
+    .game-button {
+      min-height: 110px;
+      padding: 20px;
+      border: 1px solid #34373b;
+      border-radius: 12px;
+      color: #eee;
+      background: rgb(25 27 30 / 88%);
+      text-align: left;
+      font: inherit;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, transform .2s;
+    }
+
+    .game-button:hover {
+      transform: translateY(-3px);
+      border-color: #777c83;
+      background: #24272b;
+    }
+
+    .game-button:focus-visible,
+    .close-button:focus-visible {
+      outline: 2px solid #eee;
+      outline-offset: 3px;
+    }
+
+    .game-title {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 1.05rem;
+      font-weight: 650;
+    }
+
+    .game-description {
+      color: #999da3;
+      font-size: .88rem;
+    }
+
+    .game-overlay[hidden] { display: none; }
+
+    .game-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
+      background: #08090a;
+    }
+
+    .game-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      z-index: 1;
+      width: 46px;
+      height: 46px;
+      border: 1px solid #555;
+      border-radius: 50%;
+      color: #eee;
+      background: rgb(18 19 21 / 90%);
+      font-size: 28px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="constellation-canvas" aria-hidden="true"></canvas>
+
+  <main class="page">
+    <header>
+      <h1>Game Library</h1>
+      <p>Choose a game to play.</p>
+    </header>
+
+    <section class="game-grid" aria-label="Games">
+      <button class="game-button" data-game="game assets/ch.html">
+        <span class="game-title">Chrome Dino</span>
+      </button>
+      <button class="game-button" data-game="game assets/cor.html">
+        <span class="game-title">Coreball</span>
+      </button>
+      <button class="game-button" data-game="game assets/ea.html">
+        <span class="game-title">Minecraft 26.3</span>
+      </button>
+      <button class="game-button" data-game="game assets/Ga.html">
+        <span class="game-title">Minecraft Hacks</span>
+      </button>
+      <button class="game-button" data-game="game assets/Ha.html">
+        <span class="game-title">Half Life</span>
+      </button>
+      <button class="game-button" data-game="game assets/Ho.html">
+        <span class="game-title">Hollow Knight</span>
+      </button>
+      <button class="game-button" data-game="game assets/LA.html">
+        <span class="game-title">EB Client (MC)</span>
+      </button>
+      <button class="game-button" data-game="game assets/Re.html">
+        <span class="game-title">Resent Client (MC)</span>
+      </button>
+      <button class="game-button" data-game="game assets/SM.html">
+        <span class="game-title">Super Mario 63</span>
+      </button>
+      <button class="game-button" data-game="game assets/supermario64.html">
+        <span class="game-title">Super Mario 64</span>
+      </button>
+      <button class="game-button" data-game="game assets/bitlife.html">
+        <span class="game-title">Bitlife</span>
+      </button>
+      <button class="game-button" data-game="game assets/bloonsTD4.html">
+        <span class="game-title">Bloons 4</span>
+      </button>
+      <button class="game-button" data-game="game assets/cookieclicker.html">
+        <span class="game-title">Cookie Clicker</span>
+      </button>
+      <button class="game-button" data-game="game assets/doomdos.html">
+        <span class="game-title">Doom</span>
+      </button>
+      <button class="game-button" data-game="game assets/escaperoad.html">
+        <span class="game-title">Escape Road</span>
+      </button>
+      <button class="game-button" data-game="game assets/fallout.html">
+        <span class="game-title">Fallout</span>
+      </button>
+      <button class="game-button" data-game="game assets/ocarinaoftime.html">
+        <span class="game-title">Zelda Ocarina of Time</span>
+      </button>
+      <button class="game-button" data-game="game assets/ragdollarchers.html">
+        <span class="game-title">Ragdoll Archers</span>
+      </button>
+      <button class="game-button" data-game="game assets/retrobowl.html">
+        <span class="game-title">Retro Bowl</span>
+      </button>
+      <button class="game-button" data-game="game assets/run3.html">
+        <span class="game-title">Run 3</span>
+      </button>
+      <button class="game-button" data-game="game assets/gd.html">
+        <span class="game-title">Geometry Dash</span>
+      </button>
+    </section>
+  </main>
+
+  <section class="game-overlay" id="gameOverlay" role="dialog"
+           aria-label="Game" aria-modal="true" hidden>
+    <button class="close-button" id="closeGame" type="button"
+            aria-label="Close game">×</button>
+  <iframe 
+  class="game-frame" id="gameFrame" title="Game"
+  allow="gamepad; fullscreen; pointer-lock; autoplay; camera; microphone"
+  
+  loading="lazy"
+  ></iframe>
+
+  </section>
+
+  <script>
+    //BG
+    const canvas = document.getElementById("constellation-canvas");
+    const ctx = canvas.getContext("2d");
+    let stars = [];
+    const starCount = 125;
+    const maxDistance = 150;
+
+    function resize() {
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * ratio;
+      canvas.height = window.innerHeight * ratio;
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      initStars();
+    }
+
+    class Star {
+      constructor() {
+        this.x = Math.random() * window.innerWidth;
+        this.y = Math.random() * window.innerHeight;
+        this.vx = (Math.random() - 0.5) * 0.35;
+        this.vy = (Math.random() - 0.5) * 0.35;
+        this.radius = Math.random() * 1.4 + 0.3;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > window.innerWidth) this.vx *= -1;
+        if (this.y < 0 || this.y > window.innerHeight) this.vy *= -1;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(220, 224, 230, 0.55)";
+        ctx.fill();
+      }
+    }
+
+    function initStars() {
+      stars = Array.from({ length: starCount }, () => new Star());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+      stars.forEach((star) => {
+        star.update();
+        star.draw();
+      });
+
+      for (let i = 0; i < stars.length; i++) {
+        for (let j = i + 1; j < stars.length; j++) {
+          const dx = stars[i].x - stars[j].x;
+          const dy = stars[i].y - stars[j].y;
+          const distance = Math.hypot(dx, dy);
+
+          if (distance < maxDistance) {
+            const alpha = (1 - distance / maxDistance) * 0.22;
+            ctx.beginPath();
+            ctx.moveTo(stars[i].x, stars[i].y);
+            ctx.lineTo(stars[j].x, stars[j].y);
+            ctx.strokeStyle = `rgba(220, 224, 230, ${alpha})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+    animate();
+
+    //Game windows
+    const overlay = document.getElementById("gameOverlay");
+    const frame = document.getElementById("gameFrame");
+    const closeButton = document.getElementById("closeGame");
+
+    document.querySelectorAll(".game-button").forEach((button) => {
+      button.addEventListener("click", () => {
+        frame.src = button.dataset.game;
+        overlay.hidden = false;
+        closeButton.focus();
+      });
+    });
+
+    function closeGame() {
+      overlay.hidden = true;
+      frame.src = "about:blank";
+    }
+
+    closeButton.addEventListener("click", closeGame);
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !overlay.hidden) closeGame();
+    });
+  </script>
+</body>
+</html>
