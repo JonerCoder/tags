@@ -11,6 +11,11 @@
       --menu-height: 34px;
       --dock-height: 80px;
       --window-line: rgba(0,0,0,.12);
+      --chrome-glow: rgba(255,255,255,.28);
+      --soft-panel: rgba(255,255,255,.08);
+      --soft-panel-strong: rgba(255,255,255,.12);
+      --shadow-soft: 0 18px 50px rgba(12,17,29,.22);
+      --shadow-dock: 0 14px 30px rgba(12,17,29,.18);
     }
 
     * { box-sizing: border-box; }
@@ -25,8 +30,9 @@
       overflow: hidden;
       color: white;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", sans-serif;
-      background: #10192d;
+      background: #0d1322;
       -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.01em;
     }
 
     button, input { font: inherit; }
@@ -37,10 +43,11 @@
       inset: 0;
       z-index: -2;
       background:
-        radial-gradient(ellipse at 15% 86%, rgba(255,118,168,.86), transparent 30%),
-        radial-gradient(ellipse at 73% 17%, rgba(93,214,255,.8), transparent 34%),
-        radial-gradient(ellipse at 80% 72%, rgba(150,112,255,.78), transparent 42%),
-        linear-gradient(135deg, #132748, #2a4f80 30%, #4a3b85);
+        radial-gradient(ellipse at 15% 82%, rgba(255,176,170,.8), transparent 28%),
+        radial-gradient(ellipse at 72% 18%, rgba(124,194,255,.72), transparent 30%),
+        radial-gradient(ellipse at 82% 68%, rgba(160,157,255,.7), transparent 36%),
+        linear-gradient(135deg, #12263d, #1e3556 32%, #403f73 76%, #2b2b48);
+      filter: saturate(.96) brightness(.96);
     }
 
     .wallpaper::before, .wallpaper::after {
@@ -87,11 +94,25 @@
       justify-content: space-between;
       padding: 0 16px;
       color: rgba(255,255,255,.96);
-      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.05)), rgba(19,23,34,.34);
-      border-bottom: 1px solid rgba(255,255,255,.2);
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.04)), rgba(14,17,25,.22);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(26px) saturate(180%) brightness(1.12);
+      -webkit-backdrop-filter: blur(26px) saturate(180%) brightness(1.12);
       user-select: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 1px 0 rgba(255,255,255,.04);
+      overflow: hidden;
+    }
+
+    .menubar::before,
+    .dock::before,
+    .app-window::before,
+    .spotlight-panel::before,
+    .context-menu::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,0) 30%, rgba(255,255,255,.08) 52%, rgba(255,255,255,.12));
     }
 
     .menu-left, .menu-right {
@@ -101,22 +122,28 @@
       height: 100%;
     }
 
-    .menu-brand { font-size: 13px; font-weight: 800; white-space: nowrap; }
-    .menu-label, .menu-status { font-size: 12px; white-space: nowrap; }
+    .menu-brand { font-size: 13px; font-weight: 800; white-space: nowrap; letter-spacing: .02em; }
+    .menu-label, .menu-status { font-size: 12px; white-space: nowrap; opacity: .92; }
 
     .menu-search {
       width: 27px;
       height: 27px;
       display: grid;
       place-items: center;
-      border: 0;
-      border-radius: 7px;
-      background: transparent;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 8px;
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
       color: inherit;
       cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.20), 0 3px 8px rgba(15,20,32,.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
-    .menu-search:hover { background: rgba(255,255,255,.12); }
+    .menu-search:hover {
+      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
+      border-color: rgba(255,255,255,.18);
+    }
 
     .desktop {
       position: fixed;
@@ -126,19 +153,31 @@
       scrollbar-width: thin;
     }
 
+    .desktop::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
+      pointer-events: none;
+    }
+
     .desktop-heading {
+      position: relative;
+      z-index: 1;
       margin: 0 0 20px;
       text-align: center;
-      font-size: clamp(2.5rem, 6vw, 5rem);
-      line-height: .94;
+      font-size: clamp(2.5rem, 5.3vw, 4.7rem);
+      line-height: .96;
       letter-spacing: .04em;
-      text-transform: uppercase;
-      font-weight: 800;
-      color: rgba(255,255,255,.95);
-      text-shadow: 0 2px 10px rgba(0,0,0,.18), 0 12px 26px rgba(0,0,0,.18);
+      text-transform: none;
+      font-weight: 700;
+      color: rgba(255,255,255,.92);
+      text-shadow: 0 1px 0 rgba(255,255,255,.08), 0 10px 26px rgba(8,8,14,.2);
     }
 
     .app-grid {
+      position: relative;
+      z-index: 1;
       width: min(960px, 100%);
       margin: 0 auto;
       display: grid;
@@ -154,18 +193,21 @@
       padding: 8px 5px 4px;
       border: 1px solid transparent;
       border-radius: 12px;
-      background: transparent;
+      background: rgba(255,255,255,.01);
       color: white;
       text-align: center;
       cursor: pointer;
       user-select: none;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
     }
 
     .app:hover, .app:focus-visible {
       outline: none;
-      border-color: rgba(255,255,255,.22);
-      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.20);
+      background: rgba(255,255,255,.04);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 12px 26px rgba(0,0,0,.12);
     }
 
     .app:active { transform: scale(.97); }
@@ -178,8 +220,12 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      background: transparent;
-
+      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.16);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.26), inset 0 -8px 14px rgba(255,255,255,.05), 0 12px 20px rgba(7,10,18,.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .app-icon-image, .dock-icon-image {
@@ -216,16 +262,18 @@
       height: min(680px, calc(100vh - 112px));
       min-width: min(320px, calc(100vw - 20px));
       min-height: 240px;
-      display: flex;
-      flex-direction: column;
+      display: block;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,.72);
-      border-radius: 12px;
-      background: rgba(247,248,252,.9);
-      box-shadow: 0 26px 80px rgba(0,0,0,.38);
+      border: 1px solid rgba(255,255,255,.68);
+      border-radius: 16px;
+      background: linear-gradient(180deg, rgba(247,248,252,.96), rgba(234,238,247,.88));
+      box-shadow: 0 26px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.82), inset 0 -1px 0 rgba(0,0,0,.06);
       pointer-events: auto;
       resize: both;
       animation: window-open .18s ease-out;
+      backdrop-filter: blur(12px) saturate(1.2);
+      -webkit-backdrop-filter: blur(12px) saturate(1.2);
+      overflow: hidden;
     }
 
     @keyframes window-open {
@@ -246,15 +294,19 @@
 
     .titlebar {
       position: relative;
-      flex: 0 0 42px;
+      z-index: 2;
+      height: 42px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(242,245,249,.78));
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(238,241,246,.9));
       border-bottom: 1px solid var(--window-line);
       cursor: grab;
       touch-action: none;
       user-select: none;
+      box-shadow: inset 0 -1px 0 rgba(0,0,0,.04), inset 0 1px 0 rgba(255,255,255,.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
 
     .window-controls {
@@ -265,18 +317,22 @@
     }
 
     .window-control {
-      width: 13px;
-      height: 13px;
+      width: 12px;
+      height: 12px;
       padding: 0;
-      display: grid;
-      place-items: center;
+      display: inline-block;
       border: 1px solid rgba(0,0,0,.18);
       border-radius: 50%;
       cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+      transition: transform .15s ease, filter .15s ease;
     }
 
+    .window-control:hover { transform: scale(1.06); }
     .window-control.close { background: #ff5f57; }
-    .window-control.minimize { background: #febc2e; }
+    .window-control.minimize { background: #febb2e; }
     .window-control.fullscreen { background: #28c840; }
 
     .window-title {
@@ -287,12 +343,15 @@
       font-weight: 600;
       text-overflow: ellipsis;
       white-space: nowrap;
+      letter-spacing: -.01em;
     }
 
     .app-frame {
+      position: absolute;
+      inset: 42px 0 0 0;
       display: block;
       width: 100%;
-      flex: 1;
+      height: calc(100% - 42px);
       border: 0;
       background: white;
     }
@@ -316,12 +375,12 @@
       min-height: 68px;
       padding: 8px 12px 9px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,.54);
+      border: 1px solid rgba(255,255,255,.46);
       border-radius: 20px;
-      background: linear-gradient(180deg, rgba(255,255,255,.24), rgba(255,255,255,.08)), rgba(220,230,255,.18);
-      box-shadow: 0 12px 30px rgba(0,0,0,.2);
-      backdrop-filter: blur(32px) saturate(190%);
-      -webkit-backdrop-filter: blur(32px) saturate(190%);
+      background: linear-gradient(180deg, rgba(255,255,255,.20), rgba(255,255,255,.06)), rgba(210,220,245,.18);
+      box-shadow: var(--shadow-dock), inset 0 1px 0 rgba(255,255,255,.26), inset 0 -10px 18px rgba(255,255,255,.04);
+      backdrop-filter: blur(30px) saturate(180%) brightness(1.08);
+      -webkit-backdrop-filter: blur(30px) saturate(180%) brightness(1.08);
       pointer-events: auto;
     }
 
@@ -334,18 +393,31 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      background: linear-gradient(145deg, rgba(255,255,255,.48), rgba(255,255,255,.1)), var(--icon-color, #667bd4);
+      background: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.08)), var(--icon-color, #667bd4);
       color: white;
       font-size: 24px;
       cursor: pointer;
-      transition: transform .15s ease;
-      border: 1px solid rgba(255,255,255,0.58);
+      transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+      border: 1px solid rgba(255,255,255,.48);
       border-radius: 14px;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.34), inset 0 -8px 12px rgba(0,0,0,.06), 0 8px 18px rgba(26,33,53,.18);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .dock-button::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,0));
+      pointer-events: none;
     }
 
     .dock-button:hover, .dock-button:focus-visible {
       outline: none;
       transform: translateY(-9px) scale(1.14);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.42), 0 12px 24px rgba(21,20,33,.22);
     }
 
     .dock-button.is-open::after {
@@ -356,6 +428,7 @@
       height: 4px;
       border-radius: 50%;
       background: white;
+      box-shadow: 0 0 0 2px rgba(255,255,255,.18);
     }
 
     .dock-button.minimized { opacity: .72; }
@@ -427,10 +500,13 @@
     .spotlight-panel {
       width: min(620px, 100%);
       overflow: hidden;
-      border-radius: 16px;
-      background: rgba(245,246,251,.95);
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(247,248,252,.94), rgba(237,240,248,.9));
       color: #1f2228;
-      box-shadow: 0 24px 80px rgba(0,0,0,.38);
+      box-shadow: 0 24px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.75), inset 0 -10px 18px rgba(255,255,255,.06);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      position: relative;
     }
 
     .spotlight-input-wrap {
@@ -486,11 +562,14 @@
       display: none;
       width: 220px;
       padding: 6px;
-      border: 1px solid rgba(255,255,255,.6);
+      border: 1px solid rgba(255,255,255,.5);
       border-radius: 12px;
-      background: rgba(240,243,250,.94);
+      background: linear-gradient(180deg, rgba(243,245,250,.96), rgba(228,233,244,.88));
       color: #1e232a;
-      box-shadow: 0 16px 40px rgba(0,0,0,.28);
+      box-shadow: 0 16px 40px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.7);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      position: fixed;
     }
 
     .context-menu.open { display: block; }
@@ -824,8 +903,10 @@
 
       const width = Math.min(960, window.innerWidth - 48);
       const height = Math.min(680, window.innerHeight - 112);
-      win.style.left = `${Math.max(8, (window.innerWidth - width) / 2 + (spawnIndex % 5) * 24)}px`;
-      win.style.top = `${Math.max(42, (window.innerHeight - height) / 2 + (spawnIndex % 5) * 18)}px`;
+      const left = Math.max(8, (window.innerWidth - width) / 2 + (spawnIndex % 5) * 24);
+      const top = Math.max(42, (window.innerHeight - height) / 2 + (spawnIndex % 5) * 18);
+      win.style.left = `${left}px`;
+      win.style.top = `${top}px`;
       spawnIndex++;
 
       const titlebar = document.createElement("div");
@@ -838,6 +919,10 @@
         makeControl("minimize", "Minimize", () => minimizeWindow(app.url)),
         makeControl("fullscreen", "Toggle fullscreen", () => toggleWindowFullscreen(win))
       );
+
+      titlebar.addEventListener("dblclick", () => {
+        win.classList.toggle("maximized");
+      });
 
       const title = document.createElement("span");
       title.className = "window-title";
@@ -942,8 +1027,10 @@
         if (pointerId !== event.pointerId) return;
         const left = startLeft + event.clientX - startX;
         const top = startTop + event.clientY - startY;
-        win.style.left = `${Math.max(0, Math.min(left, window.innerWidth - win.offsetWidth))}px`;
-        win.style.top = `${Math.max(0, Math.min(top, window.innerHeight - 42))}px`;
+        const maxLeft = Math.max(0, window.innerWidth - win.offsetWidth);
+        const maxTop = Math.max(0, window.innerHeight - 42);
+        win.style.left = `${Math.max(0, Math.min(left, maxLeft))}px`;
+        win.style.top = `${Math.max(0, Math.min(top, maxTop))}px`;
       });
 
       const endDrag = (event) => {
