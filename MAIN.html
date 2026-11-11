@@ -112,7 +112,8 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,0) 30%, rgba(255,255,255,.08) 52%, rgba(255,255,255,.12));
+      background: linear-gradient(135deg, rgba(255,255,255,.28), rgba(255,255,255,0) 24%, rgba(255,255,255,.07) 52%, rgba(255,255,255,.14));
+      mix-blend-mode: screen;
     }
 
     .menu-left, .menu-right {
@@ -130,19 +131,19 @@
       height: 27px;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.12);
       border-radius: 8px;
-      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+      background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.04));
       color: inherit;
       cursor: pointer;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.20), 0 3px 8px rgba(15,20,32,.12);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -2px 8px rgba(255,255,255,.04), 0 3px 8px rgba(15,20,32,.12);
+      backdrop-filter: blur(10px) saturate(140%);
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
     }
 
     .menu-search:hover {
-      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.06));
-      border-color: rgba(255,255,255,.18);
+      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+      border-color: rgba(255,255,255,.20);
     }
 
     .desktop {
@@ -205,9 +206,9 @@
 
     .app:hover, .app:focus-visible {
       outline: none;
-      border-color: rgba(255,255,255,.20);
-      background: rgba(255,255,255,.04);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.14), 0 12px 26px rgba(0,0,0,.12);
+      border-color: rgba(255,255,255,.22);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 12px 26px rgba(0,0,0,.12);
     }
 
     .app:active { transform: scale(.97); }
@@ -220,12 +221,12 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.04));
+      background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,.05));
       border-radius: 16px;
       border: 1px solid rgba(255,255,255,.16);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.26), inset 0 -8px 14px rgba(255,255,255,.05), 0 12px 20px rgba(7,10,18,.18);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.28), inset 0 -8px 16px rgba(255,255,255,.04), 0 12px 20px rgba(7,10,18,.18);
+      backdrop-filter: blur(12px) saturate(130%);
+      -webkit-backdrop-filter: blur(12px) saturate(130%);
     }
 
     .app-icon-image, .dock-icon-image {
@@ -393,16 +394,16 @@
       display: grid;
       place-items: center;
       overflow: hidden;
-      background: linear-gradient(180deg, rgba(255,255,255,.26), rgba(255,255,255,.08)), var(--icon-color, #667bd4);
+      background: linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,.08)), var(--icon-color, #667bd4);
       color: white;
       font-size: 24px;
       cursor: pointer;
       transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
-      border: 1px solid rgba(255,255,255,.48);
+      border: 1px solid rgba(255,255,255,.52);
       border-radius: 14px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.34), inset 0 -8px 12px rgba(0,0,0,.06), 0 8px 18px rgba(26,33,53,.18);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.36), inset 0 -10px 14px rgba(0,0,0,.06), 0 8px 18px rgba(26,33,53,.18);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
     }
 
     .dock-button::before {
@@ -644,7 +645,7 @@
 
     html[data-settings-wallpaper="ocean"] .wallpaper {
       background:
-        radial-gradient(ellipse at 15% 86%, rgba(80,227,205,.82), transparent 32%),
+        radial-gradient(ellipse at 15% 86%, rgba(80, 227, 205, 0.604), transparent 32%),
         radial-gradient(ellipse at 73% 17%, rgba(62,170,223,.8), transparent 34%),
         radial-gradient(ellipse at 80% 72%, rgba(65,87,181,.82), transparent 42%),
         linear-gradient(135deg, #123b55, #176f9c 42%, #343f82);
@@ -757,7 +758,7 @@
       { title: "Weather", url: "pages/weather.html", image: "pages/img assets/weather.png", color: "#a391ff" },
       { title: "Calendar", url: "pages/calendar.html", image: "N/A", color: "#a391ff" },
       { title: "Settings", url: "pages/settings.html", icon: "", image: "pages/img assets/settings.jpeg", color: "#778399" },
-      { title: "Games", url: "pages/launcher.html", icon: "", image: "pages/img assets/example.jpeg", color: "#778399" }
+      { title: "Games", url: "pages/launcher.html", icon: "", image: "pages/img assets/games.webp", color: "#778399" }
     ];
 
     const appGrid = document.getElementById("appGrid");
