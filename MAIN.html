@@ -146,6 +146,33 @@
       border-color: rgba(255,255,255,.20);
     }
 
+    .top-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-right: 6px;
+    }
+
+    .top-link {
+      color: rgba(255,255,255,.9);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      transition: background .15s ease, border-color .15s ease, transform .15s ease;
+    }
+
+    .top-link:hover,
+    .top-link:focus-visible {
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,255,255,.2);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
     .desktop {
       position: fixed;
       inset: var(--menu-height) 0 calc(var(--dock-height) + 18px);
@@ -706,6 +733,10 @@
       <span class="menu-label optional">Help</span>
     </div>
     <div class="menu-right">
+      <nav class="top-links" aria-label="Project links">
+        <a class="top-link" href="INFO.html">Info</a>
+        <a class="top-link" href="Contributers.html">Contributors</a>
+      </nav>
       <button class="menu-search" id="searchButton" type="button" aria-label="Search apps" title="Search apps (Ctrl/⌘ K)">⌕</button>
       <span class="menu-status" aria-hidden="true">◉</span>
       <span class="menu-status" aria-hidden="true">◖</span>
