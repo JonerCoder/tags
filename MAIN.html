@@ -1155,6 +1155,17 @@
     document.getElementById("searchButton").addEventListener("click", openSpotlight);
     document.getElementById("dockSearch").addEventListener("click", openSpotlight);
 
+    document.querySelectorAll(".top-link").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        openApp({
+          title: link.textContent.trim(),
+          url: link.getAttribute("href"),
+          color: "#778399"
+        });
+      });
+    });
+
     document.getElementById("dockFinder").addEventListener("click", () => {
       for (const { win } of openWindows.values()) win.style.display = "none";
     });
