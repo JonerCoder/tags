@@ -847,6 +847,7 @@
       const root = document.documentElement;
       const theme = settings.theme ?? readSetting("theme", "dark");
       const wallpaper = settings.wallpaper ?? readSetting("wallpaper", "aurora");
+      const cloak = settings.cloak ?? readSetting("cloak", "none");
 
       root.dataset.settingsTheme = ["light", "dark"].includes(theme) ? theme : "dark";
       root.dataset.settingsWallpaper = ["aurora", "sunset", "ocean", "midnight"].includes(wallpaper)
@@ -858,6 +859,25 @@
         String(settings.appLabels ?? readSetting("appLabels", "true"));
       root.dataset.settingsReduceMotion =
         String(settings.reduceMotion ?? readSetting("reduceMotion", "false"));
+
+      const cloaks = {
+        drive: {
+          title: "Google Drive",
+          icon: "example.png"
+        },
+        classroom: {
+          title: "Google Classroom",
+          icon: "pages/img assets/classroom.png"
+        },
+        EBMS: {
+          title: "EBMS Launchpage",
+          icon: "pages/img assets/ebms.png"
+        }
+      };
+      const selectedCloak = ["drive", "classroom", "EBMS"].includes(cloak) ? cloaks[cloak] : null;
+      document.title = selectedCloak?.title ?? "EBMS Launchpage";
+      document.querySelector('link[rel="icon"]').href =
+        selectedCloak?.icon ?? "pages/img assets/ebms.png";
     }
 
     function createAppIcon(app, className = "app-icon") {

@@ -276,6 +276,38 @@
       .theme-option { padding: 6px 8px; font-size: 12px; }
     }
 
+    .cloak-select-wrap {
+      position: relative;
+      flex: 0 1 240px;
+      min-width: 0;
+    }
+
+    .cloak-select-wrap::after {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      color: var(--secondary);
+      content: "⌄";
+      pointer-events: none;
+      transform: translateY(-60%);
+    }
+
+    .cloak-select {
+      width: 100%;
+      padding: 9px 34px 9px 12px;
+      appearance: none;
+      border: 0;
+      border-radius: 9px;
+      outline: none;
+      background: var(--search);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .cloak-select:focus-visible {
+      box-shadow: 0 0 0 2px var(--blue);
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { transition-duration: .01ms !important; }
     }
@@ -348,6 +380,25 @@
       </div>
     </section>
 
+    <section class="section searchable" data-search="cloaking tab title favicon google drive classroom">
+      <h2 class="section-title">Tab Cloaking</h2>
+      <div class="group">
+        <div class="row">
+          <span class="row-icon blue" aria-hidden="true">▣</span>
+          <span class="row-label">Cloak as</span>
+          <div class="cloak-select-wrap">
+            <select class="cloak-select" id="cloakSelect" aria-label="Tab cloaking">
+              <option value="none">Off</option>
+              <option value="drive">Google Drive</option>
+              <option value="classroom">Google Classroom</option>
+              <option value="EBMS">EBMS Launchpage</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <p class="note">Changes the launch page's browser tab title and icon.</p>
+    </section>
+
     <section class="section searchable" data-search="accessibility reduce motion animations">
       <h2 class="section-title">Accessibility</h2>
       <div class="group">
@@ -373,10 +424,12 @@
     const status = document.getElementById("status");
     const themeButtons = [...document.querySelectorAll("[data-theme-choice]")];
     const wallpaperButtons = [...document.querySelectorAll("[data-wallpaper]")];
+    const cloakSelect = document.getElementById("cloakSelect");
 
     const defaults = {
       theme: "dark",
       wallpaper: "aurora",
+      cloak: "none",
       dockMagnification: "true",
       appLabels: "true",
       reduceMotion: "false"
@@ -402,6 +455,7 @@
       return {
         theme: readSetting("theme"),
         wallpaper: readSetting("wallpaper"),
+        cloak: readSetting("cloak"),
         dockMagnification: readSetting("dockMagnification"),
         appLabels: readSetting("appLabels"),
         reduceMotion: readSetting("reduceMotion")
@@ -422,6 +476,10 @@
       wallpaperButtons.forEach((button) => {
         button.setAttribute("aria-pressed", String(button.dataset.wallpaper === settings.wallpaper));
       });
+
+      cloakSelect.value = [...cloakSelect.options].some((option) => option.value === settings.cloak)
+        ? settings.cloak
+        : "none";
 
       document.querySelectorAll("[data-setting]").forEach((button) => {
         button.setAttribute("aria-checked", String(settings[button.dataset.setting] === "true"));
@@ -450,6 +508,11 @@
         saveSetting("wallpaper", button.dataset.wallpaper);
         applySettings();
       });
+    });
+
+    cloakSelect.addEventListener("change", () => {
+      saveSetting("cloak", cloakSelect.value);
+      applySettings();
     });
 
     document.querySelectorAll("[data-setting]").forEach((button) => {
