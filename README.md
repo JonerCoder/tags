@@ -2,7 +2,7 @@
 
     - Many apps and games
     - Clean MacOS(ish) style UI
-    - Cloaking (Personalized for one school right now, working on that)
+    - Cloaking
     - Fast speeds
     - Easy to deploy
 
