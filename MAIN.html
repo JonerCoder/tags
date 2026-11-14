@@ -894,7 +894,7 @@
           icon: "pages/img assets/aeries.png"
         }
       };
-      const selectedCloak = ["drive", "classroom", "EBMS"].includes(cloak) ? cloaks[cloak] : null;
+      const selectedCloak = Object.hasOwn(cloaks, cloak) ? cloaks[cloak] : null;
       document.title = selectedCloak?.title ?? "EBMS Launchpage";
       document.querySelector('link[rel="icon"]').href =
         selectedCloak?.icon ?? "pages/img assets/ebms.png";
