@@ -5,7 +5,7 @@
     - Cloaking
     - Fast speeds
     - Easy to deploy
-    - Simulated browser terminal with app launcher
+    - A terminal
 
 # Deployment
 
