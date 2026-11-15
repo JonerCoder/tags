@@ -5,6 +5,7 @@
     - Cloaking
     - Fast speeds
     - Easy to deploy
+    - Simulated browser terminal
 
 # Deployment
 
@@ -19,3 +20,7 @@ python -m http.server 5000
 
 ## From downloads
 1. Go to Code > Local > Download ZIP > you can handle it from there
+
+## Terminal demo
+
+Open [`pages/terminal.html`](pages/terminal.html) from the desktop app. It is a safe simulated terminal and does not execute operating-system commands.
