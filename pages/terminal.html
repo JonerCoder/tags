@@ -38,8 +38,9 @@
     #commandInput { flex: 1; min-width: 0; border: 0; outline: 0; padding: 5px 0; color: #f1f5f9; background: transparent; caret-color: #7ee787; font: inherit; font-size: 13px; }
     #commandInput::placeholder { color: #667085; }
     .hint { margin: 0; padding: 0 22px 15px; color: #697386; font: 11px/1.5 system-ui, sans-serif; }
+    .app-launch { display: block; width: min(100%, 680px); height: 360px; margin: 8px 0 14px; border: 1px solid #394154; border-radius: 9px; background: #fff; }
     button:focus-visible, a:focus-visible, #commandInput:focus-visible { outline: 2px solid #8ab4ff; outline-offset: 3px; }
-    @media (max-width: 560px) { body { padding: 0; } .terminal { height: 100vh; min-height: 0; border: 0; border-radius: 0; } .screen { padding: 17px 14px 8px; } .input-row { padding: 8px 14px 16px; } .hint { padding: 0 14px 13px; } }
+    @media (max-width: 560px) { body { padding: 0; } .terminal { height: 100vh; min-height: 0; border: 0; border-radius: 0; } .screen { padding: 17px 14px 8px; } .input-row { padding: 8px 14px 16px; } .hint { padding: 0 14px 13px; } .app-launch { height: 55vh; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
   </style>
 </head>
@@ -57,7 +58,7 @@
       <label class="input-prompt" for="commandInput">guest@tags:~$</label>
       <input id="commandInput" type="text" spellcheck="false" autocapitalize="off" placeholder="type help and press Enter" aria-label="Enter a terminal command" autofocus>
     </form>
-    <p class="hint">A small, simulated terminal. Commands run in this page only; no system shell is connected. ↑/↓ command history · Ctrl/⌘+L clear screen</p>
+    <p class="hint">Simulated terminal; commands run in this page only. ↑/↓ command history · Ctrl/⌘+L clear screen</p>
   </main>
   <script>
     "use strict";
@@ -68,6 +69,18 @@
     const history = [];
     let historyIndex = 0;
 
+    const apps = [
+      { name: "Chat!", url: "chat.html" },
+      { name: "Camera", url: "camera.html" },
+      { name: "Codespace", url: "codespace.html" },
+      { name: "Calculator", url: "calculator.html" },
+      { name: "Notes", url: "notes.html" },
+      { name: "Weather", url: "weather.html" },
+      { name: "Calendar", url: "calendar.html" },
+      { name: "Settings", url: "settings.html" },
+      { name: "Games", url: "launcher.html" },
+      { name: "Terminal", url: "terminal.html" }
+    ];
     const virtualFiles = {
       "README.md": "Tags desktop\nA browser-based school OS-style launchpage.\n\nTry `help` to see the available terminal commands.",
       "about.txt": "Tags Terminal is a simulated command-line playground.\nIt does not run operating-system commands or access your files."
@@ -94,6 +107,32 @@
       output.appendChild(line);
     }
 
+    function normalizeAppName(name) {
+      return name.trim().toLowerCase().replace(/[!\s_-]/g, "");
+    }
+
+    function openApp(query) {
+      if (!query) {
+        print("Usage: open <app name>", "muted");
+        print(`Apps: ${apps.map((app) => app.name).join(", ")}`, "muted");
+        return;
+      }
+      const app = apps.find((item) => normalizeAppName(item.name) === normalizeAppName(query));
+      if (!app) {
+        print(`open: app not found: ${query}. Try 'ls' to list apps.`, "error");
+        return;
+      }
+      print(`Opening ${app.name}…`, "accent");
+      const frame = document.createElement("iframe");
+      frame.className = "app-launch";
+      frame.title = `${app.name} app`;
+      frame.loading = "lazy";
+      frame.src = app.url;
+      frame.setAttribute("sandbox", "allow-forms allow-scripts allow-same-origin allow-modals allow-downloads allow-pointer-lock allow-popups");
+      output.appendChild(frame);
+      screen.scrollTop = screen.scrollHeight;
+    }
+
     function run(raw) {
       const command = raw.trim();
       if (!command) return;
@@ -113,11 +152,13 @@
           print("  echo <text>   Print text");
           print("  date          Show the current date and time");
           print("  pwd           Show the virtual working directory");
-          print("  ls            List files in the virtual directory");
-          print("  cat <file>    Read a sample file (README.md or about.txt)");
+          print("  ls            List every app available on the desktop");
+          print("  open <app>    Open an app here (for example: open calculator)");
+          print("  cat <file>    Read README.md or about.txt");
           print("  whoami        Show the current demo user");
           print("  uname         Show this simulated environment");
           print("  history       List commands entered in this session");
+          print("  date, time    Show the current date and time");
           print("This is a demo, not a real operating-system shell.", "muted");
           break;
         case "clear":
@@ -127,13 +168,18 @@
           print(argument);
           break;
         case "date":
+        case "time":
           print(new Date().toString());
           break;
         case "pwd":
           print("/home/guest");
           break;
         case "ls":
-          print("README.md   about.txt", "accent");
+          print("Desktop apps:", "accent");
+          apps.forEach((app) => print(`  ${app.name}`));
+          break;
+        case "open":
+          openApp(argument);
           break;
         case "cat":
           if (!argument) print("Usage: cat <file>", "muted");
@@ -176,8 +222,8 @@
     });
 
     screen.addEventListener("click", () => input.focus());
-    print("Tags Terminal [Version 1.0]", "accent");
-    print("Welcome! Type 'help' to explore the available commands.", "muted");
+    print("Tags Terminal [Version 1.1]", "accent");
+    print("Welcome! Type 'help' to explore commands, 'ls' to list desktop apps, or 'open calculator' to launch one.", "muted");
     print();
     input.focus();
   </script>

@@ -5,7 +5,7 @@
     - Cloaking
     - Fast speeds
     - Easy to deploy
-    - Simulated browser terminal
+    - Simulated browser terminal with app launcher
 
 # Deployment
 
@@ -23,4 +23,6 @@ python -m http.server 5000
 
 ## Terminal demo
 
-Open [`pages/terminal.html`](pages/terminal.html) from the desktop app. It is a safe simulated terminal and does not execute operating-system commands.
+Open [`pages/terminal.html`](pages/terminal.html). Run `ls` to list all desktop apps or `open <app name>` to launch one in the terminal window (for example, `open calculator`).
+
+The terminal is simulated and does not execute operating-system commands.
