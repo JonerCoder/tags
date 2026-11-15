@@ -15,17 +15,10 @@
     }
 
     * { box-sizing: border-box; }
-    body { min-height: 100vh; margin: 0; padding: 28px 16px; display: grid; place-items: center; background: radial-gradient(ellipse at 50% 0, #26304a 0, #151a27 42%, #10131c 78%); }
-    .terminal { width: min(900px, 100%); height: min(650px, calc(100vh - 56px)); min-height: 360px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #394154; border-radius: 14px; background: rgba(15, 18, 27, .96); box-shadow: 0 28px 90px #0008, inset 0 1px #ffffff0d; }
-    .titlebar { min-height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 15px; border-bottom: 1px solid #303747; background: #1b2030; color: #cbd5e1; font: 600 13px/1.3 system-ui, sans-serif; }
-    .lights { display: flex; gap: 7px; }
-    .light { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
-    .light:nth-child(2) { background: #febc2e; }
-    .light:nth-child(3) { background: #28c840; }
-    .title { flex: 1; text-align: center; }
-    .back { color: #aab5ca; text-decoration: none; font-size: 12px; }
-    .back:hover { color: #fff; }
-    .screen { flex: 1; overflow: auto; padding: 20px 22px 10px; scrollbar-color: #3a4356 transparent; cursor: text; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body { background: #10131c; }
+    .terminal { width: 100%; height: 100%; min-height: 0; display: flex; flex-direction: column; overflow: hidden; background: #10131c; }
+    .screen { flex: 1; min-height: 0; overflow: auto; padding: 18px 22px 10px; scrollbar-color: #3a4356 transparent; cursor: text; }
     #output { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.7; }
     .line { min-height: 1.7em; }
     .prompt { color: #7ee787; }
@@ -33,24 +26,17 @@
     .muted { color: #8994a8; }
     .error { color: #ff8a8a; }
     .accent { color: #8ab4ff; }
-    .input-row { display: flex; align-items: center; gap: 9px; padding: 8px 22px 18px; }
+    .input-row { display: flex; align-items: center; gap: 9px; padding: 8px 22px 16px; }
     .input-prompt { color: #7ee787; white-space: nowrap; font-size: 13px; }
     #commandInput { flex: 1; min-width: 0; border: 0; outline: 0; padding: 5px 0; color: #f1f5f9; background: transparent; caret-color: #7ee787; font: inherit; font-size: 13px; }
     #commandInput::placeholder { color: #667085; }
-    .hint { margin: 0; padding: 0 22px 15px; color: #697386; font: 11px/1.5 system-ui, sans-serif; }
-    .app-launch { display: block; width: min(100%, 680px); height: 360px; margin: 8px 0 14px; border: 1px solid #394154; border-radius: 9px; background: #fff; }
-    button:focus-visible, a:focus-visible, #commandInput:focus-visible { outline: 2px solid #8ab4ff; outline-offset: 3px; }
-    @media (max-width: 560px) { body { padding: 0; } .terminal { height: 100vh; min-height: 0; border: 0; border-radius: 0; } .screen { padding: 17px 14px 8px; } .input-row { padding: 8px 14px 16px; } .hint { padding: 0 14px 13px; } .app-launch { height: 55vh; } }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+    .hint { margin: 0; padding: 0 22px 12px; color: #697386; font: 11px/1.5 system-ui, sans-serif; }
+    button:focus-visible, #commandInput:focus-visible { outline: 2px solid #8ab4ff; outline-offset: 3px; }
+    @media (max-width: 560px) { .screen { padding: 14px 14px 8px; } .input-row { padding: 8px 14px 14px; } .hint { padding: 0 14px 10px; } }
   </style>
 </head>
 <body>
   <main class="terminal" aria-label="Simulated terminal">
-    <header class="titlebar">
-      <span class="lights" aria-hidden="true"><i class="light"></i><i class="light"></i><i class="light"></i></span>
-      <span class="title">Terminal</span>
-      <a class="back" href="../MAIN.html">Desktop ↗</a>
-    </header>
     <section class="screen" id="screen" aria-label="Terminal output" tabindex="0">
       <div id="output" aria-live="polite"></div>
     </section>
@@ -69,6 +55,7 @@
     const history = [];
     let historyIndex = 0;
 
+    // Keep these titles aligned with the desktop app list in MAIN.html.
     const apps = [
       { name: "Chat!", url: "chat.html" },
       { name: "Camera", url: "camera.html" },
@@ -122,15 +109,33 @@
         print(`open: app not found: ${query}. Try 'ls' to list apps.`, "error");
         return;
       }
-      print(`Opening ${app.name}…`, "accent");
-      const frame = document.createElement("iframe");
-      frame.className = "app-launch";
-      frame.title = `${app.name} app`;
-      frame.loading = "lazy";
-      frame.src = app.url;
-      frame.setAttribute("sandbox", "allow-forms allow-scripts allow-same-origin allow-modals allow-downloads allow-pointer-lock allow-popups");
-      output.appendChild(frame);
-      screen.scrollTop = screen.scrollHeight;
+
+      // The desktop exposes openApp in its page context. Calling it creates a
+      // normal desktop app window instead of nesting another frame in Terminal.
+      try {
+        if (window.parent !== window && typeof window.parent.openApp === "function") {
+          window.parent.openApp({
+            title: app.name,
+            url: `pages/${app.url}`,
+            image: "",
+            icon: "▣",
+            color: "#778399"
+          });
+          print(`Opened ${app.name} in a desktop window.`, "accent");
+          return;
+        }
+      } catch {
+        // Cross-origin parent access is intentionally not used as a fallback.
+      }
+
+      print(`Opening ${app.name} in a new tab.`, "accent");
+      const link = document.createElement("a");
+      link.href = app.url;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = `Launch ${app.name}`;
+      link.className = "line accent";
+      output.appendChild(link);
     }
 
     function run(raw) {
@@ -150,15 +155,14 @@
           print("  help          Show this help message");
           print("  clear         Clear the terminal screen");
           print("  echo <text>   Print text");
-          print("  date          Show the current date and time");
+          print("  date / time   Show the current date and time");
           print("  pwd           Show the virtual working directory");
-          print("  ls            List every app available on the desktop");
-          print("  open <app>    Open an app here (for example: open calculator)");
+          print("  ls            List all desktop apps");
+          print("  open <app>    Open an app in a desktop window");
           print("  cat <file>    Read README.md or about.txt");
           print("  whoami        Show the current demo user");
           print("  uname         Show this simulated environment");
           print("  history       List commands entered in this session");
-          print("  date, time    Show the current date and time");
           print("This is a demo, not a real operating-system shell.", "muted");
           break;
         case "clear":
@@ -222,7 +226,7 @@
     });
 
     screen.addEventListener("click", () => input.focus());
-    print("Tags Terminal [Version 1.1]", "accent");
+    print("Tags Terminal [Version 1.2]", "accent");
     print("Welcome! Type 'help' to explore commands, 'ls' to list desktop apps, or 'open calculator' to launch one.", "muted");
     print();
     input.focus();
