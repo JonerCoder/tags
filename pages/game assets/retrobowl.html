@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+      <script>
+    // 1. Block the game engine from attaching a beforeunload event
+    const origAdd = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, fn, opts) {
+      if (type === 'beforeunload') return;
+      return origAdd.call(this, type, fn, opts);
+    };
+
+    // 2. Lock window.onbeforeunload so the game cannot overwrite it
+    Object.defineProperty(window, 'onbeforeunload', {
+      get: () => null,
+      set: () => {},
+      configurable: false
+    });
+  </script>
     <script>
   try {
     Object.defineProperty(Navigator.prototype, "getGamepads", {

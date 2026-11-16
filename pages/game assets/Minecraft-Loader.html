@@ -4,6 +4,21 @@
 <meta charset="utf-8">
 <title>Minecraft Loader</title>
 </head>
+  <script>
+    // 1. Block the game engine from attaching a beforeunload event
+    const origAdd = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, fn, opts) {
+      if (type === 'beforeunload') return;
+      return origAdd.call(this, type, fn, opts);
+    };
+
+    // 2. Lock window.onbeforeunload so the game cannot overwrite it
+    Object.defineProperty(window, 'onbeforeunload', {
+      get: () => null,
+      set: () => {},
+      configurable: false
+    });
+  </script>
 <body>
 <script>
 var GAME_URL = "https://bitbucket.org/p2p-alt-public/p2p-emis/raw/main/novix2.html";
